@@ -9,7 +9,8 @@ CREATE TABLE role (
 
 CREATE TABLE user (
     id SERIAL PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
+    name VARCHAR(50) UNIQUE NOT NULL,
+    dni VARCHAR(8) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     status BOOLEAN DEFAULT TRUE
@@ -36,6 +37,8 @@ CREATE TABLE student (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100),
     email VARCHAR(100),
+    headquarters VARCHAR(100),
+    intended_major VARCHAR(100),
     user_id INT UNIQUE REFERENCES user(id) ON DELETE CASCADE
 );
 
@@ -125,7 +128,7 @@ CREATE TABLE assignment_submission (
 -- INDEXES FOR PERFORMANCE
 -- ======================================
 
-CREATE INDEX idx_user_username ON user(username);
+--CREATE INDEX idx_user_username ON user(username);
 CREATE INDEX idx_enrollment_student_id ON enrollment(student_id);
 CREATE INDEX idx_assignment_resource_id ON assignment_submission(resource_id);
 
@@ -139,6 +142,9 @@ ALTER TABLE shift
 
 ALTER TABLE shift
     ADD CONSTRAINT chk_modality CHECK (modality IN ('online', 'in-person'));
+
+ALTER TABLE student
+    ADD CONSTRAINT chk_headquarters CHECK (headquarters IN ('valle', 'trujillo', "huamachuco"));
 
 -- Allowed resource types
 ALTER TABLE resource
