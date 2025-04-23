@@ -1,0 +1,11 @@
+
+spring:
+  application:
+    name: virtual-classroom
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+server:
+  port: ${PORT}

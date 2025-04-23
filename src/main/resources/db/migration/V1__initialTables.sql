@@ -13,14 +13,12 @@ CREATE TABLE user (
     dni VARCHAR(8) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
-    status BOOLEAN DEFAULT TRUE
+    active BOOLEAN DEFAULT TRUE
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    role_id INT REFERENCES role(id) NOT NULL
 );
 
-CREATE TABLE user_role (
-    user_id INT REFERENCES user(id) ON DELETE CASCADE,
-    role_id INT REFERENCES role(id) ON DELETE CASCADE,
-    PRIMARY KEY (user_id, role_id)
-);
 
 -- =========================
 -- PERSONAL ENTITIES
@@ -28,18 +26,17 @@ CREATE TABLE user_role (
 
 CREATE TABLE teacher (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100),
-    email VARCHAR(100),
-    user_id INT UNIQUE REFERENCES user(id) ON DELETE CASCADE
+    user_id INT UNIQUE REFERENCES user(id) ON DELETE CASCADE,
+    contract_date_star TIMESTAMP,
+    contract_date_end TIMESTAMP,
+    specialization VARCHAR(100)
 );
 
 CREATE TABLE student (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100),
-    email VARCHAR(100),
-    headquarters VARCHAR(100),
-    intended_major VARCHAR(100),
-    user_id INT UNIQUE REFERENCES user(id) ON DELETE CASCADE
+    user_id INT UNIQUE REFERENCES user(id) ON DELETE CASCADE,
+    university_headquarters VARCHAR(100),
+    intended_major VARCHAR(100)
 );
 
 -- =========================
@@ -53,21 +50,21 @@ CREATE TABLE semester (
     end_date DATE
 );
 
-CREATE TABLE shift (
+CREATE TABLE shift (    --turno
     id SERIAL PRIMARY KEY,
     name VARCHAR(20), -- morning, afternoon, evening
     modality VARCHAR(20), -- online, in-person
+    price NUMERIC(10, 2),
     semester_id INT REFERENCES semester(id) ON DELETE CASCADE
 );
 
 CREATE TABLE course (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100),
-    description TEXT,
-    teacher_id INT REFERENCES teacher(id) ON DELETE SET NULL
+    description TEXT
 );
 
-CREATE TABLE course_shift (
+CREATE TABLE course_shift (   --basicamente el curso que dicta en cierto dia
     id SERIAL PRIMARY KEY,
     course_id INT REFERENCES course(id) ON DELETE CASCADE,
     shift_id INT REFERENCES shift(id) ON DELETE CASCADE,
@@ -75,6 +72,15 @@ CREATE TABLE course_shift (
     start_time TIME,
     end_time TIME
 );
+
+CREATE TABLE course_shift_teacher (
+    id SERIAL PRIMARY KEY,
+    course_shift_id INT REFERENCES course_shift(id) ON DELETE CASCADE,
+    teacher_id INT REFERENCES teacher(id) ON DELETE CASCADE,
+    UNIQUE(course_shift_id, teacher_id)
+);
+
+
 
 -- =========================
 -- AUTOMATIC ENROLLMENT
@@ -84,6 +90,10 @@ CREATE TABLE enrollment (
     id SERIAL PRIMARY KEY,
     student_id INT REFERENCES student(id) ON DELETE CASCADE,
     semester_id INT REFERENCES semester(id) ON DELETE CASCADE,
+    total_price NUMERIC(10, 2),
+    status VARCHAR(50) DEFAULT 'pending',
+    file_voucher_url TEXT,
+    cupon_id INT REFERENCES coupon(id) ON DELETE CASCADE,
     enrollment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -92,6 +102,20 @@ CREATE TABLE enrollment_detail (
     enrollment_id INT REFERENCES enrollment(id) ON DELETE CASCADE,
     shift_id INT REFERENCES shift(id) ON DELETE CASCADE
 );
+
+CREATE TABLE coupon (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(50) UNIQUE NOT NULL,
+    description TEXT,
+    type VARCHAR(20) NOT NULL CHECK (type IN ('percentage', 'fixed')),
+    amount NUMERIC(10,2) NOT NULL,
+    max_uses INT DEFAULT 1,
+    used_count INT DEFAULT 0,
+    valid_from DATE,
+    valid_until DATE,
+    active BOOLEAN DEFAULT TRUE
+);
+
 
 -- =========================
 -- VIRTUAL CLASSROOM
@@ -144,11 +168,20 @@ ALTER TABLE shift
     ADD CONSTRAINT chk_modality CHECK (modality IN ('online', 'in-person'));
 
 ALTER TABLE student
-    ADD CONSTRAINT chk_headquarters CHECK (headquarters IN ('valle', 'trujillo', "huamachuco"));
+    ADD CONSTRAINT chk_university_headquarters CHECK (university_headquarters IN ('valle', 'trujillo', 'huamachuco'));
+
+ALTER TABLE enrollment
+    ADD CONSTRAINT chk_enrollment_status CHECK (status IN ('pending', 'paid','cancelled'));
 
 -- Allowed resource types
 ALTER TABLE resource
     ADD CONSTRAINT chk_resource_type CHECK (type IN ('assignment', 'document', 'video'));
+
+
+-- Validate time of course
+ALTER TABLE course_shift
+  ADD CONSTRAINT chk_time_range CHECK (start_time < end_time);
+
 
 -- ======================================
 -- AVOID DUPLICATE ENROLLMENT PER SEMESTER
