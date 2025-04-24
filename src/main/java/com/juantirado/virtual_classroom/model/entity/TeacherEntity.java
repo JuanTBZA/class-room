@@ -1,6 +1,8 @@
 package com.juantirado.virtual_classroom.model.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,6 +23,7 @@ public class TeacherEntity {
 
     @Column(name = "user_id")
     @OneToOne(fetch = FetchType.LAZY)
+    @NotNull
     private UserEntity user;
 
     @Column(name = "contract_date_star")

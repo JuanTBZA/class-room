@@ -1,10 +1,12 @@
 package com.juantirado.virtual_classroom.model.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 
 @Data
 @NoArgsConstructor
@@ -17,5 +19,7 @@ public class RolEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
+    @NotBlank
     private String name;
 }
