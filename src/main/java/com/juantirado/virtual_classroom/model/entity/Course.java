@@ -2,22 +2,17 @@ package com.juantirado.virtual_classroom.model.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "semester")
-public class SemesterEntity {
+public class Course {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,11 +22,6 @@ public class SemesterEntity {
     @NotBlank
     private String name;
 
-    @Column(name = "start_date")
-    @NotNull
-    private LocalDate startDate;
+    private String description;
 
-    @Column(name = "end_date")
-    @NotNull
-    private LocalDate endDate;
 }

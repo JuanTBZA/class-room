@@ -1,25 +1,37 @@
 package com.juantirado.virtual_classroom.model.entity;
 
+import com.juantirado.virtual_classroom.model.enums.ShiftModality;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "role")
-public class RolEntity {
+public class Shift {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
     @NotBlank
     private String name;
+
+    @NotBlank
+    private ShiftModality modality;
+
+    @ManyToOne
+    @JoinColumn(name = "semester_id")
+    private Semester semester;
+
+
+
 }

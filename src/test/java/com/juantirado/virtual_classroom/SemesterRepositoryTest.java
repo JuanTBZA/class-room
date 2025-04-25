@@ -1,6 +1,6 @@
 package com.juantirado.virtual_classroom;
 
-import com.juantirado.virtual_classroom.model.entity.SemesterEntity;
+import com.juantirado.virtual_classroom.model.entity.Semester;
 import com.juantirado.virtual_classroom.repository.SemesterRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +27,15 @@ public class SemesterRepositoryTest {
 
     @Test
     void shouldSaveSemester(){
-        SemesterEntity semester = new SemesterEntity();
+        Semester semester = new Semester();
         semester.setName("2025-3");
         semester.setStartDate(LocalDate.of(2025, 4, 24));
         semester.setEndDate(LocalDate.of(2025, 11, 20));
         var saved = semesterRepository.save(semester);
         assertNotNull(saved.getId());
         assertEquals("2025-3",saved.getName());
+
+
     }
 
     @Test

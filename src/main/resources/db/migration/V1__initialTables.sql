@@ -52,13 +52,22 @@ CREATE TABLE semester (
     end_date DATE
 );
 
-CREATE TABLE shift (    --turno
+CREATE TABLE shift (    --turno dia/tarde/noche son 5 dias por turno
     id SERIAL PRIMARY KEY,
     name VARCHAR(20), -- morning, afternoon, evening
     modality VARCHAR(20), -- online, in-person
-    price NUMERIC(10, 2),
     semester_id INT REFERENCES semester(id) ON DELETE CASCADE
 );
+
+CREATE TABLE shift_price (
+    id SERIAL PRIMARY KEY,
+    shift_id INT REFERENCES shift(id) ON DELETE CASCADE,
+    price NUMERIC(10,2) NOT NULL,
+    valid_from DATE NOT NULL,
+    valid_until DATE,
+    created_at DATE
+);
+
 
 CREATE TABLE course (
     id SERIAL PRIMARY KEY,
@@ -103,10 +112,10 @@ CREATE TABLE enrollment (
     id SERIAL PRIMARY KEY,
     student_id INT REFERENCES student(id) ON DELETE CASCADE,
     semester_id INT REFERENCES semester(id) ON DELETE CASCADE,
-    total_price NUMERIC(10, 2),
+    total_amount NUMERIC(10, 2),
     status VARCHAR(50) DEFAULT 'pending',
     file_voucher_url TEXT,
-    cupon_id INT REFERENCES coupon(id) ON DELETE CASCADE,
+    coupon_id INT REFERENCES coupon(id) ON DELETE CASCADE,
     enrollment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -115,6 +124,16 @@ CREATE TABLE enrollment_detail (
     enrollment_id INT REFERENCES enrollment(id) ON DELETE CASCADE,
     shift_id INT REFERENCES shift(id) ON DELETE CASCADE
 );
+
+CREATE TABLE enrollment_coupon (
+    id SERIAL PRIMARY KEY,
+    enrollment_id INT REFERENCES enrollment(id) ON DELETE CASCADE,
+    coupon_id INT REFERENCES coupon(id) ON DELETE CASCADE,
+    applied_amount NUMERIC(10, 2) NOT NULL,
+    applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(enrollment_id, coupon_id)
+);
+
 
 -- =========================
 -- VIRTUAL CLASSROOM
