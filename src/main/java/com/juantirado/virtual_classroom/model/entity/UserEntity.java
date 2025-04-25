@@ -40,6 +40,7 @@ public class UserEntity {
     @NotBlank
     private String email;
 
+    @Column(columnDefinition = "BIT(1) default 1")
     private Boolean active;
 
     @Column(name = "created_at")
@@ -50,8 +51,8 @@ public class UserEntity {
     @UpdateTimestamp
     private LocalDateTime updateDate;
 
-    @Column(name = "role_id")
-    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id")
+    @OneToOne(fetch = FetchType.LAZY)
     @NotNull
     private RolEntity rol;
 

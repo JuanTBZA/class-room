@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -15,22 +16,22 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Entity
-public class TeacherEntity {
+@Table(name = "semester")
+public class SemesterEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(name = "user_id")
-    @OneToOne(fetch = FetchType.LAZY)
+    @Column(unique = true)
+    @NotBlank
+    private String name;
+
+    @Column(name = "start_date")
     @NotNull
-    private UserEntity user;
+    private LocalDate startDate;
 
-    @Column(name = "contract_date_start")
-    private LocalDateTime contractDateStart;
-
-    @Column(name = "contract_date_end")
-    private LocalDateTime contractDateEnd;
-
-    private String specialization;
+    @Column(name = "end_date")
+    @NotNull
+    private LocalDate endDate;
 }

@@ -18,7 +18,7 @@ public class StudentEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id")
+    @JoinColumn(name = "user_id")
     @OneToOne(fetch = FetchType.LAZY)
     @NotNull
     private UserEntity user;

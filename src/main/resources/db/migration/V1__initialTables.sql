@@ -1,24 +1,26 @@
 -- =========================
 -- ROLES AND USERS
 -- =========================
+-- =========================
+-- ROLES AND USERS
+-- =========================
 
 CREATE TABLE role (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE
 );
 
-CREATE TABLE user (
+CREATE TABLE "user" (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) UNIQUE NOT NULL,
     dni VARCHAR(8) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
-    active BOOLEAN DEFAULT TRUE
+    active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     role_id INT REFERENCES role(id) NOT NULL
 );
-
 
 -- =========================
 -- PERSONAL ENTITIES
@@ -26,15 +28,15 @@ CREATE TABLE user (
 
 CREATE TABLE teacher (
     id SERIAL PRIMARY KEY,
-    user_id INT UNIQUE REFERENCES user(id) ON DELETE CASCADE,
-    contract_date_star TIMESTAMP,
+    user_id INT UNIQUE REFERENCES "user"(id) ON DELETE CASCADE,
+    contract_date_start TIMESTAMP,
     contract_date_end TIMESTAMP,
     specialization VARCHAR(100)
 );
 
 CREATE TABLE student (
     id SERIAL PRIMARY KEY,
-    user_id INT UNIQUE REFERENCES user(id) ON DELETE CASCADE,
+    user_id INT UNIQUE REFERENCES "user"(id) ON DELETE CASCADE,
     university_headquarters VARCHAR(100),
     intended_major VARCHAR(100)
 );
@@ -80,11 +82,22 @@ CREATE TABLE course_shift_teacher (
     UNIQUE(course_shift_id, teacher_id)
 );
 
-
-
 -- =========================
 -- AUTOMATIC ENROLLMENT
 -- =========================
+
+CREATE TABLE coupon (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(50) UNIQUE NOT NULL,
+    description TEXT,
+    coupon_type VARCHAR(20) NOT NULL CHECK (coupon_type IN ('percentage', 'fixed')),
+    amount NUMERIC(10,2) NOT NULL,
+    max_uses INT DEFAULT 1,
+    used_count INT DEFAULT 0,
+    valid_from DATE,
+    valid_until DATE,
+    active BOOLEAN DEFAULT TRUE
+);
 
 CREATE TABLE enrollment (
     id SERIAL PRIMARY KEY,
@@ -102,20 +115,6 @@ CREATE TABLE enrollment_detail (
     enrollment_id INT REFERENCES enrollment(id) ON DELETE CASCADE,
     shift_id INT REFERENCES shift(id) ON DELETE CASCADE
 );
-
-CREATE TABLE coupon (
-    id SERIAL PRIMARY KEY,
-    code VARCHAR(50) UNIQUE NOT NULL,
-    description TEXT,
-    type VARCHAR(20) NOT NULL CHECK (type IN ('percentage', 'fixed')),
-    amount NUMERIC(10,2) NOT NULL,
-    max_uses INT DEFAULT 1,
-    used_count INT DEFAULT 0,
-    valid_from DATE,
-    valid_until DATE,
-    active BOOLEAN DEFAULT TRUE
-);
-
 
 -- =========================
 -- VIRTUAL CLASSROOM
@@ -152,7 +151,7 @@ CREATE TABLE assignment_submission (
 -- INDEXES FOR PERFORMANCE
 -- ======================================
 
---CREATE INDEX idx_user_username ON user(username);
+--CREATE INDEX idx_user_username ON "user"(name);
 CREATE INDEX idx_enrollment_student_id ON enrollment(student_id);
 CREATE INDEX idx_assignment_resource_id ON assignment_submission(resource_id);
 
@@ -177,11 +176,9 @@ ALTER TABLE enrollment
 ALTER TABLE resource
     ADD CONSTRAINT chk_resource_type CHECK (type IN ('assignment', 'document', 'video'));
 
-
 -- Validate time of course
 ALTER TABLE course_shift
   ADD CONSTRAINT chk_time_range CHECK (start_time < end_time);
-
 
 -- ======================================
 -- AVOID DUPLICATE ENROLLMENT PER SEMESTER
