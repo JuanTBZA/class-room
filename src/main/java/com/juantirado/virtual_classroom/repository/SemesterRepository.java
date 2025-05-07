@@ -1,6 +1,6 @@
 package com.juantirado.virtual_classroom.repository;
 
-import com.juantirado.virtual_classroom.model.entity.Semester;
+import com.juantirado.virtual_classroom.model.entity.academic.Semester;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;

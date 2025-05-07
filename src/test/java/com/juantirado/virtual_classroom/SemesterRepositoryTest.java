@@ -1,6 +1,6 @@
 package com.juantirado.virtual_classroom;
 
-import com.juantirado.virtual_classroom.model.entity.Semester;
+import com.juantirado.virtual_classroom.model.entity.academic.Semester;
 import com.juantirado.virtual_classroom.repository.SemesterRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

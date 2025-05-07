@@ -29,8 +29,8 @@ CREATE TABLE "user" (
 CREATE TABLE teacher (
     id SERIAL PRIMARY KEY,
     user_id INT UNIQUE REFERENCES "user"(id) ON DELETE CASCADE,
-    contract_date_start TIMESTAMP,
-    contract_date_end TIMESTAMP,
+    contract_date_start DATE,
+    contract_date_end DATE,
     specialization VARCHAR(100)
 );
 
@@ -52,20 +52,19 @@ CREATE TABLE semester (
     end_date DATE
 );
 
-CREATE TABLE shift (    --turno dia/tarde/noche son 5 dias por turno
+CREATE TABLE shift (    --turno dia/tarde/noche son 5 dias por turno / seria como el periodo/ciclo
     id SERIAL PRIMARY KEY,
     name VARCHAR(20), -- morning, afternoon, evening
     modality VARCHAR(20), -- online, in-person
     semester_id INT REFERENCES semester(id) ON DELETE CASCADE
 );
 
-CREATE TABLE shift_price (
+CREATE TABLE price_history (  --precio del turno
     id SERIAL PRIMARY KEY,
     shift_id INT REFERENCES shift(id) ON DELETE CASCADE,
     price NUMERIC(10,2) NOT NULL,
-    valid_from DATE NOT NULL,
-    valid_until DATE,
-    created_at DATE
+    created_at TIMESTAMP DEFAULT CURRENT_DATE,
+    updated_at TIMESTAMP DEFAULT CURRENT_DATE
 );
 
 
@@ -75,20 +74,14 @@ CREATE TABLE course (
     description TEXT
 );
 
-CREATE TABLE course_shift (   --basicamente el curso que dicta en cierto dia
+CREATE TABLE scheduled_course (   --basicamente el horario del curso que se dicta en cierto dia y que profesor lo dicta
     id SERIAL PRIMARY KEY,
     course_id INT REFERENCES course(id) ON DELETE CASCADE,
     shift_id INT REFERENCES shift(id) ON DELETE CASCADE,
+    teacher_id INT REFERENCES teacher(id) ON DELETE CASCADE,
     day_of_week VARCHAR(20), -- Monday, Tuesday, etc.
     start_time TIME,
     end_time TIME
-);
-
-CREATE TABLE course_shift_teacher (
-    id SERIAL PRIMARY KEY,
-    course_shift_id INT REFERENCES course_shift(id) ON DELETE CASCADE,
-    teacher_id INT REFERENCES teacher(id) ON DELETE CASCADE,
-    UNIQUE(course_shift_id, teacher_id)
 );
 
 -- =========================
@@ -111,27 +104,21 @@ CREATE TABLE coupon (
 CREATE TABLE enrollment (
     id SERIAL PRIMARY KEY,
     student_id INT REFERENCES student(id) ON DELETE CASCADE,
-    semester_id INT REFERENCES semester(id) ON DELETE CASCADE,
-    total_amount NUMERIC(10, 2),
     status VARCHAR(50) DEFAULT 'pending',
     file_voucher_url TEXT,
-    coupon_id INT REFERENCES coupon(id) ON DELETE CASCADE,
+    total_amount NUMERIC(10, 2) NOT NULL,
     enrollment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE enrollment_detail (
     id SERIAL PRIMARY KEY,
     enrollment_id INT REFERENCES enrollment(id) ON DELETE CASCADE,
-    shift_id INT REFERENCES shift(id) ON DELETE CASCADE
-);
-
-CREATE TABLE enrollment_coupon (
-    id SERIAL PRIMARY KEY,
-    enrollment_id INT REFERENCES enrollment(id) ON DELETE CASCADE,
+    shift_id INT REFERENCES shift(id) ON DELETE CASCADE,
     coupon_id INT REFERENCES coupon(id) ON DELETE CASCADE,
-    applied_amount NUMERIC(10, 2) NOT NULL,
-    applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(enrollment_id, coupon_id)
+    base_price NUMERIC(10, 2) NOT NULL,
+    applied_discount NUMERIC(10, 2) DEFAULT 0.00,
+    total NUMERIC(10, 2) GENERATED ALWAYS AS (base_price - applied_discount) STORED,
+    applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 
@@ -139,12 +126,17 @@ CREATE TABLE enrollment_coupon (
 -- VIRTUAL CLASSROOM
 -- =========================
 
+CREATE TABLE course_student(  --estudiantes que llevan el curso
+    scheduled_course_id INT REFERENCES scheduled_course(id) ON DELETE CASCADE,
+    student_id INT REFERENCES student(id) ON DELETE CASCADE
+);
+
 CREATE TABLE course_session (
     id SERIAL PRIMARY KEY,
-    course_shift_id INT REFERENCES course_shift(id) ON DELETE CASCADE,
+    scheduled_course_id INT REFERENCES scheduled_course(id) ON DELETE CASCADE,
     title VARCHAR(100),
     description TEXT,
-    published_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE resource (
@@ -154,12 +146,20 @@ CREATE TABLE resource (
     title VARCHAR(100),
     description VARCHAR(500),
     file_url TEXT,
-    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE assignment_resource (
+    id INT PRIMARY KEY REFERENCES resource(id) ON DELETE CASCADE,
+    limit_date TIMESTAMP NOT NULL,
+    allow_late_submission BOOLEAN DEFAULT FALSE,
+    visibility_start TIMESTAMP,
+);
+
 
 CREATE TABLE assignment_submission (
     id SERIAL PRIMARY KEY,
-    resource_id INT REFERENCES resource(id) ON DELETE CASCADE,
+    assignment_resource_id INT REFERENCES assignment_resource(id) ON DELETE CASCADE,
     student_id INT REFERENCES student(id) ON DELETE CASCADE,
     file_url TEXT,
     submitted_at TIMESTAMP,
@@ -196,7 +196,7 @@ ALTER TABLE resource
     ADD CONSTRAINT chk_resource_type CHECK (type IN ('assignment', 'document', 'video'));
 
 -- Validate time of course
-ALTER TABLE course_shift
+ALTER TABLE scheduled_course
   ADD CONSTRAINT chk_time_range CHECK (start_time < end_time);
 
 -- ======================================

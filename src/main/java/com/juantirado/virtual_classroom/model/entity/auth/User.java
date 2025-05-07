@@ -1,4 +1,4 @@
-package com.juantirado.virtual_classroom.model.entity;
+package com.juantirado.virtual_classroom.model.entity.auth;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -55,7 +55,7 @@ public class User {
     private Role role;
 
     @PrePersist
-    void setPersit(){
+    void setPersist(){
         active = true;
     }
 
