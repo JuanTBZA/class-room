@@ -1,14 +1,23 @@
-
 spring:
   application:
     name: virtual-classroom
+
   datasource:
     url: jdbc:postgresql://localhost:5432/db_virtual_classroom
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
+
   flyway:
     clean-disabled: false
 
 server:
   port: ${PORT}
+
+application:
+  security:
+    jwt:
+      secret-key: McvbIKwPavjhmKBwFUdHDXzvfWeAZgaJ8XJr6cBsvNkPI9VUVAwW7GzFMV6ZhHsI
+      expiration: 15000
+      refresh-token:
+        expiration: 2592000000

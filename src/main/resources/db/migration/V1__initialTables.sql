@@ -5,7 +5,7 @@
 -- ROLES AND USERS
 -- =========================
 
-CREATE TABLE "user" (
+CREATE TABLE users (
                         id SERIAL PRIMARY KEY,
                         name VARCHAR(50) UNIQUE NOT NULL,
                         dni VARCHAR(8) UNIQUE NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE token (
                        is_revoked BOOLEAN NOT NULL,
                        is_expired BOOLEAN NOT NULL,
                        user_id BIGINT,
-                       CONSTRAINT fk_token_user FOREIGN KEY (user_id) REFERENCES "user"(id)
+                       CONSTRAINT fk_token_user FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
 -- Tabla authority
@@ -37,6 +37,16 @@ CREATE TABLE authority (
 CREATE TABLE role (
                       id SERIAL PRIMARY KEY,
                       name VARCHAR(255) NOT NULL UNIQUE
+);
+
+
+
+CREATE TABLE user_roles (
+                            user_id BIGINT NOT NULL,
+                            role_id BIGINT NOT NULL,
+                            PRIMARY KEY (user_id, role_id),
+                            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                            FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE CASCADE
 );
 
 -- Tabla intermedia role_authorities
@@ -55,7 +65,7 @@ CREATE TABLE role_authorities (
 
 CREATE TABLE teacher (
     id SERIAL PRIMARY KEY,
-    user_id INT UNIQUE REFERENCES "user"(id) ON DELETE CASCADE,
+    user_id INT UNIQUE REFERENCES users(id) ON DELETE CASCADE,
     contract_date_start DATE,
     contract_date_end DATE,
     specialization VARCHAR(100)
@@ -63,7 +73,7 @@ CREATE TABLE teacher (
 
 CREATE TABLE student (
     id SERIAL PRIMARY KEY,
-    user_id INT UNIQUE REFERENCES "user"(id) ON DELETE CASCADE,
+    user_id INT UNIQUE REFERENCES users(id) ON DELETE CASCADE,
     university_headquarters VARCHAR(100),
     intended_major VARCHAR(100)
 );
