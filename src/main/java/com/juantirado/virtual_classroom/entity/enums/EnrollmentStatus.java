@@ -1,4 +1,4 @@
-package com.juantirado.virtual_classroom.model.enums;
+package com.juantirado.virtual_classroom.entity.enums;
 
 public enum EnrollmentStatus {
     PENDING,REJECTED,APPROVED, CANCELED, EXPIRED

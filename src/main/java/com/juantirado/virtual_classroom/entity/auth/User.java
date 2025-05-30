@@ -1,4 +1,4 @@
-package com.juantirado.virtual_classroom.model.entity.auth;
+package com.juantirado.virtual_classroom.entity.auth;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -11,6 +11,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -39,7 +42,7 @@ public class User {
     private String email;
 
     @Column(columnDefinition = "BIT(1) default 1")
-    private Boolean active;
+    private Boolean enabled;
 
     @Column(name = "created_at")
     @CreationTimestamp
@@ -49,14 +52,20 @@ public class User {
     @UpdateTimestamp
     private LocalDateTime updateDate;
 
-    @JoinColumn(name = "role_id")
-    @OneToOne(fetch = FetchType.LAZY)
-    @NotNull
-    private Role role;
+    @OneToMany(mappedBy = "user")
+    private List<Token> tokens;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
 
     @PrePersist
     void setPersist(){
-        active = true;
+        enabled = true;
     }
 
 }

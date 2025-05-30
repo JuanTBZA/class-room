@@ -1,6 +1,6 @@
-package com.juantirado.virtual_classroom.model.entity.enrollment;
+package com.juantirado.virtual_classroom.entity.enrollment;
 
-import com.juantirado.virtual_classroom.model.entity.academic.Shift;
+import com.juantirado.virtual_classroom.entity.academic.Shift;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

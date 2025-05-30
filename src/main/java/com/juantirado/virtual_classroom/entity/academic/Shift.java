@@ -1,15 +1,12 @@
-package com.juantirado.virtual_classroom.model.entity.academic;
+package com.juantirado.virtual_classroom.entity.academic;
 
-import com.juantirado.virtual_classroom.model.entity.enrollment.PriceHistory;
-import com.juantirado.virtual_classroom.model.enums.ShiftModality;
+import com.juantirado.virtual_classroom.entity.enums.ShiftModality;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Data
 @NoArgsConstructor

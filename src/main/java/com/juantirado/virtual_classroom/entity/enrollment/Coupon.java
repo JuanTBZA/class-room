@@ -1,6 +1,6 @@
-package com.juantirado.virtual_classroom.model.entity.enrollment;
+package com.juantirado.virtual_classroom.entity.enrollment;
 
-import com.juantirado.virtual_classroom.model.enums.CouponType;
+import com.juantirado.virtual_classroom.entity.enums.CouponType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

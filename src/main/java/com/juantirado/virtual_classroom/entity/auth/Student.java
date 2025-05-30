@@ -1,4 +1,4 @@
-package com.juantirado.virtual_classroom.model.entity.auth;
+package com.juantirado.virtual_classroom.entity.auth;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

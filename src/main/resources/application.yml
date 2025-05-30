@@ -9,7 +9,6 @@ spring:
     driver-class-name: org.postgresql.Driver
   flyway:
     clean-disabled: false
-    clean-on-validation-error: true
 
 server:
   port: ${PORT}

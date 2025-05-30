@@ -1,4 +1,4 @@
-package com.juantirado.virtual_classroom.model.entity.auth;
+package com.juantirado.virtual_classroom.entity.academic;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -7,14 +7,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "role")
-public class Role {
+@Table(name = "course")
+public class Course {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,4 +22,7 @@ public class Role {
     @Column(unique = true)
     @NotBlank
     private String name;
+
+    private String description;
+
 }

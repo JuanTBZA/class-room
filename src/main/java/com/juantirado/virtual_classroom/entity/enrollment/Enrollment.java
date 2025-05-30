@@ -1,7 +1,7 @@
-package com.juantirado.virtual_classroom.model.entity.enrollment;
+package com.juantirado.virtual_classroom.entity.enrollment;
 
-import com.juantirado.virtual_classroom.model.entity.auth.Student;
-import com.juantirado.virtual_classroom.model.enums.EnrollmentStatus;
+import com.juantirado.virtual_classroom.entity.auth.Student;
+import com.juantirado.virtual_classroom.entity.enums.EnrollmentStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

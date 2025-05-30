@@ -1,4 +1,4 @@
-package com.juantirado.virtual_classroom.model.dto;
+package com.juantirado.virtual_classroom.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
