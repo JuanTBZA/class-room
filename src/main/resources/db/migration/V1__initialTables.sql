@@ -153,7 +153,7 @@ CREATE TABLE assignment_resource (
     id INT PRIMARY KEY REFERENCES resource(id) ON DELETE CASCADE,
     limit_date TIMESTAMP NOT NULL,
     allow_late_submission BOOLEAN DEFAULT FALSE,
-    visibility_start TIMESTAMP,
+    visibility_start TIMESTAMP
 );
 
 
@@ -171,8 +171,8 @@ CREATE TABLE assignment_submission (
 -- ======================================
 
 --CREATE INDEX idx_user_username ON "user"(name);
-CREATE INDEX idx_enrollment_student_id ON enrollment(student_id);
-CREATE INDEX idx_assignment_resource_id ON assignment_submission(resource_id);
+--CREATE INDEX idx_enrollment_student_id ON enrollment(student_id);
+--CREATE INDEX idx_assignment_resource_id ON assignment_submission(resource_id);
 
 -- ======================================
 -- VALUE CONSTRAINTS
@@ -203,5 +203,5 @@ ALTER TABLE scheduled_course
 -- AVOID DUPLICATE ENROLLMENT PER SEMESTER
 -- ======================================
 
-ALTER TABLE enrollment
-    ADD CONSTRAINT unq_student_semester UNIQUE(student_id, semester_id);
+--TABLE enrollment
+--    ADD CONSTRAINT unq_student_semester UNIQUE(student_id, semester_id);
