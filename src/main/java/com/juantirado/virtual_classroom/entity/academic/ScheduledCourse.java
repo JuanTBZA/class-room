@@ -1,6 +1,5 @@
 package com.juantirado.virtual_classroom.entity.academic;
 
-import com.juantirado.virtual_classroom.entity.auth.Teacher;
 import com.juantirado.virtual_classroom.entity.enums.Day;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

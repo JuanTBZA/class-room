@@ -5,9 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class AuthRequestDTO {
+@NoArgsConstructor
+public class UserResponseDto {
+    private String name;
     private String email;
-    private String password;
 }

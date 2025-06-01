@@ -8,15 +8,18 @@ VALUES
 -- Insert roles si no existen
 INSERT INTO role (name) VALUES
                             ('ROLE_USER'),
-                            ('ROLE_ADMIN')
+                            ('ROLE_ADMIN'),
+                            ('ROLE_TEACHER'),
+                            ('ROLE_STUDENT')
     ON CONFLICT (name) DO NOTHING;
 
 -- Insert authorities si no existen
 INSERT INTO authority (name) VALUES
-                                 ('USER_READ'),
-                                 ('USER_WRITE'),
-                                 ('USER_DELETE'),
-                                 ('USER_UPDATE')
+                                 ('READ_TEACHER'),
+                                 ('WRITE_TEACHER'),
+
+                                 ('READ_STUDENT'),
+                                 ('USER_STUDENT')
     ON CONFLICT (name) DO NOTHING;
 
 -- Insert relación ROLE_USER - USER_READ

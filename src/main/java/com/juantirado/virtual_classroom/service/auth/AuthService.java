@@ -1,9 +1,9 @@
 package com.juantirado.virtual_classroom.service.auth;
 
 
-import com.juantirado.virtual_classroom.dto.auth.AuthRequestDTO;
-import com.juantirado.virtual_classroom.dto.auth.RegisterRequestDTO;
-import com.juantirado.virtual_classroom.dto.auth.TokenResponseDTO;
+import com.juantirado.virtual_classroom.dto.auth.AuthRequestDto;
+import com.juantirado.virtual_classroom.dto.auth.RegisterRequestDto;
+import com.juantirado.virtual_classroom.dto.auth.TokenResponseDto;
 import com.juantirado.virtual_classroom.entity.auth.Role;
 import com.juantirado.virtual_classroom.entity.auth.Token;
 import com.juantirado.virtual_classroom.entity.auth.User;
@@ -31,7 +31,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public TokenResponseDTO register(final RegisterRequestDTO request) {
+    public TokenResponseDto register(final RegisterRequestDto request) {
 
         Role userRole = roleRepository.findByName("ROLE_USER")
                 .orElseThrow(() -> new RuntimeException("default role not configured"));
@@ -52,7 +52,7 @@ public class AuthService {
         final String refreshToken = jwtService.generateRefreshToken(savedUser);
 
         saveUserToken(savedUser, jwtToken);
-        return new TokenResponseDTO(jwtToken, refreshToken);
+        return new TokenResponseDto(jwtToken, refreshToken);
     }
 
 
@@ -71,7 +71,7 @@ public class AuthService {
     }
 
 
-    public TokenResponseDTO authenticate(final AuthRequestDTO request) {
+    public TokenResponseDto authenticate(final AuthRequestDto request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -84,7 +84,7 @@ public class AuthService {
         final String refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user, accessToken);
-        return new TokenResponseDTO(accessToken, refreshToken);
+        return new TokenResponseDto(accessToken, refreshToken);
     }
 
     private void saveUserToken(User user, String jwtToken) {
@@ -109,7 +109,7 @@ public class AuthService {
         }
     }
 
-    public TokenResponseDTO refreshToken(@NotNull final String authentication) {
+    public TokenResponseDto refreshToken(@NotNull final String authentication) {
 
         if (authentication == null || !authentication.startsWith("Bearer ")) {
             throw new IllegalArgumentException("Invalid auth header");
@@ -130,6 +130,6 @@ public class AuthService {
         revokeAllUserTokens(user);
         saveUserToken(user, accessToken);
 
-        return new TokenResponseDTO(accessToken, refreshToken);
+        return new TokenResponseDto(accessToken, refreshToken);
     }
 }
