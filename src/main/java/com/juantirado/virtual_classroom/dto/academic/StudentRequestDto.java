@@ -6,5 +6,6 @@ public record StudentRequestDto (
     RegisterRequestDto registerRequestDto,
     String universityHeadquarters,
     String intended_major
+
 ){
 }

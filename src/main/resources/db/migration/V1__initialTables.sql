@@ -4,35 +4,11 @@
 -- =========================
 -- ROLES AND USERS
 -- =========================
-
-CREATE TABLE users (
-                        id SERIAL PRIMARY KEY,
-                        name VARCHAR(50) UNIQUE NOT NULL,
-                        dni VARCHAR(8) UNIQUE NOT NULL,
-                        password VARCHAR(255) NOT NULL,
-                        email VARCHAR(100) UNIQUE NOT NULL,
-                        enabled BOOLEAN DEFAULT TRUE,
-                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Tabla token
-CREATE TABLE token (
-                       id SERIAL PRIMARY KEY,
-                       token TEXT,
-                       token_type VARCHAR(25) DEFAULT 'BEARER',
-                       is_revoked BOOLEAN NOT NULL,
-                       is_expired BOOLEAN NOT NULL,
-                       user_id BIGINT,
-                       CONSTRAINT fk_token_user FOREIGN KEY (user_id) REFERENCES users (id)
-);
-
--- Tabla authority
-CREATE TABLE authority (
-                           id SERIAL PRIMARY KEY,
-                           name VARCHAR(255) NOT NULL UNIQUE
-);
-
+    ----------
+    ---------
+    ---------
+-- PARA MI YO DEL FITURO, SI SALE ERROR AL EJECUTAR PROBABLEMENTE ES PORQUE MODIFICASTE EL SQL, ELIMINA Y CREA TU ESQUEMA.
+--
 -- Tabla role
 CREATE TABLE role (
                       id SERIAL PRIMARY KEY,
@@ -41,21 +17,46 @@ CREATE TABLE role (
 
 
 
-CREATE TABLE user_roles (
-                            user_id BIGINT NOT NULL,
-                            role_id BIGINT NOT NULL,
-                            PRIMARY KEY (user_id, role_id),
-                            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-                            FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE CASCADE
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) UNIQUE NOT NULL,
+    dni VARCHAR(8) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    enabled BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    role_id INTEGER NOT NULL,
+    FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE CASCADE
 );
+
+-- Tabla token
+CREATE TABLE token (
+    id SERIAL PRIMARY KEY,
+    token TEXT,
+    token_type VARCHAR(25) DEFAULT 'BEARER',
+    is_revoked BOOLEAN NOT NULL,
+    is_expired BOOLEAN NOT NULL,
+    user_id BIGINT,
+    CONSTRAINT fk_token_user FOREIGN KEY (user_id) REFERENCES users (id)
+);
+
+-- Tabla authority
+CREATE TABLE authority (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE
+);
+
+
+
 
 -- Tabla intermedia role_authorities
 CREATE TABLE role_authorities (
-                                  role_id INTEGER NOT NULL,
-                                  authority_id INTEGER NOT NULL,
-                                  PRIMARY KEY (role_id, authority_id),
-                                  FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE CASCADE,
-                                  FOREIGN KEY (authority_id) REFERENCES authority(id) ON DELETE CASCADE
+    role_id INTEGER NOT NULL,
+    authority_id INTEGER NOT NULL,
+    PRIMARY KEY (role_id, authority_id),
+    FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE CASCADE,
+    FOREIGN KEY (authority_id) REFERENCES authority(id) ON DELETE CASCADE
 );
 
 

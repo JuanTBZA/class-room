@@ -1,6 +1,7 @@
 package com.juantirado.virtual_classroom.service.auth;
 
 
+import com.juantirado.virtual_classroom.entity.auth.Authority;
 import com.juantirado.virtual_classroom.entity.auth.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -44,22 +45,14 @@ public class JwtService {
     }
 
     private String buildToken(final User user, final long expiration) {
-        Set<String> authorities = user.getRoles().stream()
-                .flatMap(role -> {
-                    Set<String> roleAuthorities = new HashSet<>();
-                    // Añadir el rol como authority (con prefijo ROLE_)
-                    roleAuthorities.add(role.getName());
-                    // Añadir los permisos específicos del rol
-                    role.getAuthorities().forEach(auth ->
-                            roleAuthorities.add(auth.getName()));
-                    return roleAuthorities.stream();
-                })
-                .collect(Collectors.toSet());
+        Set<String> authorities = user.getRole().getAuthorities().stream()
+                .map(Authority::getName).collect(Collectors.toSet());
 
         return Jwts
                 .builder()
                 .claims(Map.of(
                         "name", user.getName(),
+                        "role", user.getRole().getName(),
                         "authorities", authorities
                 ))
                 .subject(user.getEmail())

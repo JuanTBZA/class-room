@@ -1,13 +1,11 @@
 package com.juantirado.virtual_classroom.dto.auth;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.List;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class UserResponseDto {
-    private String name;
-    private String email;
+public record UserResponseDto (
+        String name,
+        String email,
+        String role,
+        boolean enabled
+){
 }

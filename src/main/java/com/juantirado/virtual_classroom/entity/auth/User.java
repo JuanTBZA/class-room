@@ -42,7 +42,7 @@ public class User {
     private String email;
 
     @Column(columnDefinition = "BIT(1) default 1")
-    private Boolean enabled;
+    private boolean enabled;
 
     @Column(name = "created_at")
     @CreationTimestamp
@@ -55,13 +55,9 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<Role> roles = new HashSet<>();
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
 
     @PrePersist
     void setPersist(){

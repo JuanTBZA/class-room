@@ -35,15 +35,14 @@ public class AppConfig {
                     .username(user.getEmail())
                     .password(user.getPassword())
                     .authorities(
-                            user.getRoles().stream()
-                                    .flatMap(role -> role.getAuthorities().stream())
-                                    .map(permission -> new SimpleGrantedAuthority(permission.getName()))
+                            user.getRole().getAuthorities().stream()
+                                    .map(authority -> new SimpleGrantedAuthority(authority.getName()))
                                     .collect(Collectors.toList())
                     )
-
                     .build();
         };
     }
+
 
     @Bean
     public AuthenticationProvider authenticationProvider() {

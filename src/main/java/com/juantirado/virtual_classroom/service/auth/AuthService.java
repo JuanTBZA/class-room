@@ -33,11 +33,11 @@ public class AuthService {
 
     public TokenResponseDto register(final RegisterRequestDto request) {
 
-        Role userRole = roleRepository.findByName("ROLE_USER")
-                .orElseThrow(() -> new RuntimeException("default role not configured"));
+        Role userRole = roleRepository.findByName("ROLE_" + request.getRole().toUpperCase())
+                .orElseThrow(() -> new RuntimeException("Rol no configurado: " + request.getRole()));
 
         final User user = User.builder()
-                .roles(Set.of(userRole))
+                .role(userRole)
                 .name(request.getName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -63,7 +63,7 @@ public class AuthService {
         return repository.findByEmail(email)
                 .orElseGet(() -> repository.save(User
                         .builder()
-                        .roles(Set.of(userRole))
+                        .role(userRole)
                         .name(name)
                         .email(email)
                         .password(passwordEncoder.encode("redildigital"))
