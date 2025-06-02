@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -38,6 +39,42 @@ public class UserServiceImpl implements UserService {
         user.setRole(roleRepository.findByName(userRequestDto.role()).orElse(null));
         return userMapper.toResponseDto(userRepository.save(user));
     }
+
+    @Override
+    public UserResponseDto update(long id, UserRequestDto userRequestDto) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() ->  new IllegalArgumentException("Usuario no encontrado con id: " + id));
+
+        userRepository.findByEmail(userRequestDto.email())
+                .filter(existing -> !existing.getId().equals(id))
+                .ifPresent(existing -> {
+                    throw new IllegalArgumentException("El correo ya está en uso por otro usuario.");
+                });
+
+        userRepository.findByDni(userRequestDto.dni())
+                .filter(existing -> !existing.getId().equals(id))
+                .ifPresent(existing -> {
+                    throw new IllegalArgumentException("El DNI ya está en uso por otro usuario.");
+                });
+
+        userMapper.entityToUpdate(userRequestDto, user);
+
+        Optional.ofNullable(userRequestDto.password())
+                .filter(p -> !p.isBlank())
+                .ifPresent(p -> user.setPassword(passwordEncoder.encode(p)));
+
+        user.setRole(
+                roleRepository.findByName(userRequestDto.role())
+                        .orElseThrow(() ->  new IllegalArgumentException("Rol no encontrado: " + userRequestDto.role()))
+        );
+
+        return userMapper.toResponseDto(userRepository.save(user));
+
+
+    }
+
+
 
 
 

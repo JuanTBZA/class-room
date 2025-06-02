@@ -5,6 +5,7 @@ import com.juantirado.virtual_classroom.dto.auth.UserResponseDto;
 import com.juantirado.virtual_classroom.entity.auth.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
@@ -14,5 +15,10 @@ public interface UserMapper {
 
     @Mapping(target = "role", ignore = true)
     public User toEntity(UserRequestDto requestDto);
+
+    @Mapping(target = "id", ignore = true )
+    @Mapping(target = "role", ignore = true)
+    @Mapping(target = "password", ignore = true)
+    public void entityToUpdate(UserRequestDto requestDto, @MappingTarget User user);
 
 }
