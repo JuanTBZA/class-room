@@ -1,4 +1,4 @@
-package com.juantirado.virtual_classroom.controller;
+package com.juantirado.virtual_classroom.controller.auth;
 
 import com.juantirado.virtual_classroom.dto.auth.AuthRequestDto;
 import com.juantirado.virtual_classroom.dto.auth.RegisterRequestDto;

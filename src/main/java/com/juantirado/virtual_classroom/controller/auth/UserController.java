@@ -1,9 +1,8 @@
-package com.juantirado.virtual_classroom.controller;
+package com.juantirado.virtual_classroom.controller.auth;
 
 import com.juantirado.virtual_classroom.dto.auth.UserRequestDto;
 import com.juantirado.virtual_classroom.dto.auth.UserResponseDto;
 import com.juantirado.virtual_classroom.service.auth.UserService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +41,12 @@ public class UserController {
     public ResponseEntity<UserResponseDto> updateUser(@PathVariable long id, @RequestBody UserRequestDto userRequestDto) {
         UserResponseDto updatedUser = userService.update(id, userRequestDto);
         return ResponseEntity.ok(updatedUser);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<UserResponseDto> deleteUser(@PathVariable long id) {
+        UserResponseDto deletedUser = userService.delete(id);
+        return ResponseEntity.ok(deletedUser);
     }
 
 }

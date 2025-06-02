@@ -109,7 +109,8 @@ CREATE TABLE price_history (  --precio del turno
 CREATE TABLE course (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100),
-    description TEXT
+    description TEXT,
+    is_deleted BOOLEAN DEFAULT TRUE
 );
 
 CREATE TABLE scheduled_course (   --basicamente el horario del curso que se dicta en cierto dia y que profesor lo dicta

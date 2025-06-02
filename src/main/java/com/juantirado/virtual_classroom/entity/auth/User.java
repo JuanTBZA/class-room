@@ -42,7 +42,7 @@ public class User {
     private String email;
 
     @Column(columnDefinition = "BIT(1) default 1")
-    private boolean enabled;
+    private Boolean enabled;
 
     @Column(name = "created_at")
     @CreationTimestamp

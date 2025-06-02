@@ -68,11 +68,20 @@ public class UserServiceImpl implements UserService {
                 roleRepository.findByName(userRequestDto.role())
                         .orElseThrow(() ->  new IllegalArgumentException("Rol no encontrado: " + userRequestDto.role()))
         );
+        return userMapper.toResponseDto(userRepository.save(user));
+    }
+
+    @Override
+    public UserResponseDto delete(long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con id: " + id));
+
+        user.setEnabled(false);
 
         return userMapper.toResponseDto(userRepository.save(user));
-
-
     }
+
+
 
 
 

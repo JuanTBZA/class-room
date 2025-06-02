@@ -1,4 +1,8 @@
 package com.juantirado.virtual_classroom.dto.academic;
 
-public class CourseRequestDto {
+public record CourseRequestDto (
+        String name,
+        String description
+){
+
 }
