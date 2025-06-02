@@ -33,8 +33,8 @@ public class AuthService {
 
     public TokenResponseDto register(final RegisterRequestDto request) {
 
-        Role userRole = roleRepository.findByName("ROLE_" + request.getRole().toUpperCase())
-                .orElseThrow(() -> new RuntimeException("Rol no configurado: " + request.getRole()));
+        Role userRole = roleRepository.findByName("ROLE_USER")
+                .orElseThrow(() -> new RuntimeException("Rol no configurado"));
 
         final User user = User.builder()
                 .role(userRole)
