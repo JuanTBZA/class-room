@@ -1,4 +1,4 @@
-package com.juantirado.virtual_classroom.Security;
+package com.juantirado.virtual_classroom.security;
 
 
 import com.juantirado.virtual_classroom.entity.auth.User;

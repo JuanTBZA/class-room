@@ -1,4 +1,4 @@
-package com.juantirado.virtual_classroom.service.enrollment.Impl;
+package com.juantirado.virtual_classroom.service.enrollment.impl;
 
 import org.springframework.stereotype.Service;
 

@@ -56,21 +56,6 @@ public class AuthService {
     }
 
 
-    public User findOrCreateByEmail(String email, String name) {
-        Role userRole = roleRepository.findByName("ROLE_USER")
-                .orElseThrow(() -> new RuntimeException("default role not configured"));
-
-        return repository.findByEmail(email)
-                .orElseGet(() -> repository.save(User
-                        .builder()
-                        .role(userRole)
-                        .name(name)
-                        .email(email)
-                        .password(passwordEncoder.encode("redildigital"))
-                        .build()));
-    }
-
-
     public TokenResponseDto authenticate(final AuthRequestDto request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -90,7 +75,7 @@ public class AuthService {
     private void saveUserToken(User user, String jwtToken) {
         final Token token = Token.builder()
                 .user(user)
-                .token(jwtToken)
+                .value(jwtToken)
                 .tokenType(Token.TokenType.BEARER)
                 .isExpired(false)
                 .isRevoked(false)

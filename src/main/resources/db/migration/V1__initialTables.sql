@@ -33,7 +33,7 @@ CREATE TABLE users (
 -- Tabla token
 CREATE TABLE token (
     id SERIAL PRIMARY KEY,
-    token TEXT,
+    value TEXT,
     token_type VARCHAR(25) DEFAULT 'BEARER',
     is_revoked BOOLEAN NOT NULL,
     is_expired BOOLEAN NOT NULL,

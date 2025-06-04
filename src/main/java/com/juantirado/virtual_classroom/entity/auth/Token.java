@@ -20,7 +20,7 @@ public final class Token {
 
 
     @Column(columnDefinition = "TEXT")
-    private String token;
+    private String value;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default

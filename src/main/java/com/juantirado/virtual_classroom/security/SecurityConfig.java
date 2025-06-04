@@ -1,4 +1,4 @@
-package com.juantirado.virtual_classroom.Security;
+package com.juantirado.virtual_classroom.security;
 
 import com.juantirado.virtual_classroom.entity.auth.Token;
 import com.juantirado.virtual_classroom.repository.auth.TokenRepository;
@@ -98,7 +98,7 @@ public class SecurityConfig {
         }
 
         final String jwt = authHeader.substring(7);
-        final Token storedToken = tokenRepository.findByToken(jwt)
+        final Token storedToken = tokenRepository.findByValue(jwt)
                 .orElse(null);
         if (storedToken != null) {
             storedToken.setIsExpired(true);

@@ -23,7 +23,7 @@ public class CourseServiceImpl implements CourseService {
         return courseRepository.findByDeletedFalse()
                 .stream()
                 .map(courseMapper::toResponseDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

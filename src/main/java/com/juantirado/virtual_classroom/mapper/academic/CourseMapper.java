@@ -6,7 +6,6 @@ import com.juantirado.virtual_classroom.entity.academic.Course;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "spring")
 public interface CourseMapper {

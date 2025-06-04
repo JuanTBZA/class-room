@@ -1,4 +1,4 @@
-package com.juantirado.virtual_classroom.Security;
+package com.juantirado.virtual_classroom.security;
 
 
 import com.juantirado.virtual_classroom.entity.auth.User;
@@ -84,7 +84,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         // Verificar token en base de datos
-        boolean isTokenValid = tokenRepository.findByToken(jwt)
+        boolean isTokenValid = tokenRepository.findByValue(jwt)
                 .map(token -> !token.getIsExpired() && !token.getIsRevoked())
                 .orElse(false);
 
