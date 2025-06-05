@@ -2,6 +2,7 @@ package com.juantirado.virtual_classroom.entity.academic;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +21,8 @@ public class Course {
     private Long id;
 
     @Column(unique = true)
-    @NotBlank
+    @NotEmpty
+
     private String name;
 
     private String description;

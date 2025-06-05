@@ -1,5 +1,6 @@
 package com.juantirado.virtual_classroom.service.academic.impl;
 
+import com.juantirado.virtual_classroom.dto.academic.SemesterRequestDto;
 import com.juantirado.virtual_classroom.dto.academic.SemesterResponseDto;
 import com.juantirado.virtual_classroom.mapper.academic.SemesterMapper;
 import com.juantirado.virtual_classroom.repository.academic.SemesterRepository;
@@ -22,5 +23,15 @@ public class SemesterServiceImpl implements SemesterService {
                 .stream()
                 .map(semesterMapper::toResponseDto).toList();
     }
+
+    @Override
+    public SemesterResponseDto update(Long id, SemesterRequestDto requestDto) {
+        return semesterRepository.findById(id).map(semester -> {
+            semesterMapper.updateEntity(requestDto,semester);
+            return semesterMapper.toResponseDto(semester);
+        }).orElse(null);
+    }
+
+
 
 }
