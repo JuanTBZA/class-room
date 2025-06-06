@@ -8,5 +8,9 @@ import java.util.List;
 public interface SemesterService {
     List<SemesterResponseDto> getAll();
 
+    SemesterResponseDto findById(Long id);
+
+    SemesterResponseDto create(SemesterRequestDto dto);
+
     SemesterResponseDto update(Long id, SemesterRequestDto requestDto);
 }

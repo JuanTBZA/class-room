@@ -6,6 +6,7 @@ import com.juantirado.virtual_classroom.mapper.academic.CourseMapper;
 import com.juantirado.virtual_classroom.repository.academic.CourseRepository;
 import com.juantirado.virtual_classroom.service.academic.CourseService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
     private final CourseMapper courseMapper;

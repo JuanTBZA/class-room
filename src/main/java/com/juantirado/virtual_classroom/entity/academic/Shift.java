@@ -1,34 +1,40 @@
-package com.juantirado.virtual_classroom.entity.academic;
+    package com.juantirado.virtual_classroom.entity.academic;
 
-import com.juantirado.virtual_classroom.entity.enums.ShiftModality;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+    import com.juantirado.virtual_classroom.entity.enums.ShiftModality;
+    import jakarta.persistence.*;
+    import jakarta.validation.constraints.NotBlank;
+    import jakarta.validation.constraints.NotEmpty;
+    import jakarta.validation.constraints.NotNull;
+    import lombok.AllArgsConstructor;
+    import lombok.Builder;
+    import lombok.Data;
+    import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@Entity
-@Table(name = "shift")
-public class Shift {
+    import java.math.BigDecimal;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @Entity
+    @Table(name = "shift")
+    public class Shift {
 
-    @NotBlank
-    private String name;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
 
-    @NotBlank
-    @Enumerated(EnumType.STRING)
-    private ShiftModality modality;
+        @NotBlank
+        private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "semester_id")
-    private Semester semester;
+        @NotNull
+        @Enumerated(EnumType.STRING)
+        private ShiftModality modality;
 
-}
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "semester_id"    )
+        private Semester semester;
+
+        private BigDecimal price;
+
+    }

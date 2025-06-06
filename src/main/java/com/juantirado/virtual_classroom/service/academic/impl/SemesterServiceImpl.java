@@ -6,12 +6,13 @@ import com.juantirado.virtual_classroom.mapper.academic.SemesterMapper;
 import com.juantirado.virtual_classroom.repository.academic.SemesterRepository;
 import com.juantirado.virtual_classroom.service.academic.SemesterService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@AllArgsConstructor()
+@RequiredArgsConstructor
 public class SemesterServiceImpl implements SemesterService {
     private final SemesterRepository semesterRepository;
     private final SemesterMapper semesterMapper;
@@ -22,6 +23,16 @@ public class SemesterServiceImpl implements SemesterService {
                 .findAll()
                 .stream()
                 .map(semesterMapper::toResponseDto).toList();
+    }
+
+    @Override
+    public SemesterResponseDto findById(Long id){
+        return semesterMapper.toResponseDto(semesterRepository.findById(id).orElse(null));
+    }
+
+    @Override
+    public SemesterResponseDto create(SemesterRequestDto dto){
+        return semesterMapper.toResponseDto(semesterRepository.save(semesterMapper.toEntity(dto)));
     }
 
     @Override

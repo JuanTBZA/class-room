@@ -6,6 +6,7 @@ import com.juantirado.virtual_classroom.dto.academic.CourseResponseDto;
 import com.juantirado.virtual_classroom.service.academic.CourseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +23,9 @@ public class CourseController {
     @GetMapping
     public ResponseEntity<List<CourseResponseDto>> getAllCourses() {
         List<CourseResponseDto> courses = courseService.getAll();
+        if (courses.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
         return ResponseEntity.ok(courses);
     }
 
@@ -29,7 +33,7 @@ public class CourseController {
     public ResponseEntity<CourseResponseDto> getCourseById(@PathVariable Long id) {
         CourseResponseDto course = courseService.getById(id);
         if (course == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(course);
     }
@@ -37,9 +41,7 @@ public class CourseController {
     @PostMapping
     public ResponseEntity<CourseResponseDto> createCourse(@Valid @RequestBody CourseRequestDto courseRequestDto) {
         CourseResponseDto created = courseService.create(courseRequestDto);
-        return ResponseEntity
-                .created(URI.create("/api/courses/" + created.id()))
-                .body(created);
+        return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
@@ -47,7 +49,7 @@ public class CourseController {
                                                           @Valid @RequestBody CourseRequestDto courseRequestDto) {
         CourseResponseDto updated = courseService.update(id, courseRequestDto);
         if (updated == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(updated);
     }
@@ -56,7 +58,7 @@ public class CourseController {
     public ResponseEntity<CourseResponseDto> deleteCourse(@PathVariable Long id) {
         CourseResponseDto deleted = courseService.delete(id);
         if (deleted == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(deleted);
     }

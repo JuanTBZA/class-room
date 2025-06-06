@@ -94,15 +94,8 @@ CREATE TABLE shift (    --turno dia/tarde/noche son 5 dias por turno / seria com
     id SERIAL PRIMARY KEY,
     name VARCHAR(20), -- morning, afternoon, evening
     modality VARCHAR(20), -- online, in-person
-    semester_id INT REFERENCES semester(id) ON DELETE CASCADE
-);
-
-CREATE TABLE price_history (  --precio del turno
-    id SERIAL PRIMARY KEY,
-    shift_id INT REFERENCES shift(id) ON DELETE CASCADE,
     price NUMERIC(10,2) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_DATE,
-    updated_at TIMESTAMP DEFAULT CURRENT_DATE
+    semester_id INT REFERENCES semester(id) ON DELETE CASCADE
 );
 
 
@@ -218,11 +211,9 @@ CREATE TABLE assignment_submission (
 -- ======================================
 
 -- Allowed values for shift name and modality
-ALTER TABLE shift
-    ADD CONSTRAINT chk_shift_name CHECK (name IN ('morning', 'afternoon', 'evening'));
 
-ALTER TABLE shift
-    ADD CONSTRAINT chk_modality CHECK (modality IN ('online', 'in-person'));
+
+
 
 ALTER TABLE student
     ADD CONSTRAINT chk_university_headquarters CHECK (university_headquarters IN ('valle', 'trujillo', 'huamachuco'));
