@@ -1,22 +1,16 @@
 -- =========================
 -- ROLES AND USERS
 -- =========================
--- =========================
--- ROLES AND USERS
--- =========================
-    ----------
-    ---------
-    ---------
+
 -- PARA MI YO DEL FITURO, SI SALE ERROR AL EJECUTAR PROBABLEMENTE ES PORQUE MODIFICASTE EL SQL, ELIMINA Y CREA TU ESQUEMA.
---
+
 -- Tabla role
 CREATE TABLE role (
-                      id SERIAL PRIMARY KEY,
-                      name VARCHAR(255) NOT NULL UNIQUE
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE
 );
 
-
-
+-- Tabla users
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
@@ -46,9 +40,6 @@ CREATE TABLE authority (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE
 );
-
-
-
 
 -- Tabla intermedia role_authorities
 CREATE TABLE role_authorities (
@@ -199,31 +190,8 @@ CREATE TABLE assignment_submission (
 );
 
 -- ======================================
--- INDEXES FOR PERFORMANCE
--- ======================================
-
---CREATE INDEX idx_user_username ON "user"(name);
---CREATE INDEX idx_enrollment_student_id ON enrollment(student_id);
---CREATE INDEX idx_assignment_resource_id ON assignment_submission(resource_id);
-
--- ======================================
 -- VALUE CONSTRAINTS
 -- ======================================
-
--- Allowed values for shift name and modality
-
-
-
-
-ALTER TABLE student
-    ADD CONSTRAINT chk_university_headquarters CHECK (university_headquarters IN ('valle', 'trujillo', 'huamachuco'));
-
-ALTER TABLE enrollment
-    ADD CONSTRAINT chk_enrollment_status CHECK (status IN ('pending', 'paid','cancelled'));
-
--- Allowed resource types
-ALTER TABLE resource
-    ADD CONSTRAINT chk_resource_type CHECK (type IN ('assignment', 'document', 'video'));
 
 -- Validate time of course
 ALTER TABLE scheduled_course
@@ -233,5 +201,3 @@ ALTER TABLE scheduled_course
 -- AVOID DUPLICATE ENROLLMENT PER SEMESTER
 -- ======================================
 
---TABLE enrollment
---    ADD CONSTRAINT unq_student_semester UNIQUE(student_id, semester_id);

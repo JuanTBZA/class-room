@@ -15,11 +15,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@TestPropertySource(properties = {
-        "PORT=8080",
-        "DB_USERNAME=postgres",
-        "DB_PASSWORD="
-})
 public class SemesterRepositoryTest {
 
     @Autowired

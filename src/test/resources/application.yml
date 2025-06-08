@@ -4,9 +4,9 @@ spring:
     name: virtual-classroom
   datasource:
     url: jdbc:postgresql://localhost:5432/db_virtual_classroom
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    username: postgres
+    password:
     driver-class-name: org.postgresql.Driver
 
 server:
-  port: ${PORT}
+  port: 8080

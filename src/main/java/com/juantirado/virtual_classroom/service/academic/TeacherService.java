@@ -1,4 +1,14 @@
 package com.juantirado.virtual_classroom.service.academic;
 
+import com.juantirado.virtual_classroom.dto.academic.TeacherRequestDto;
+import com.juantirado.virtual_classroom.dto.academic.TeacherResponseDto;
+
+import java.util.List;
+
 public interface TeacherService {
+    List<TeacherResponseDto> getAll();
+
+    TeacherResponseDto getById(Long id);
+
+    TeacherResponseDto createTeacher(TeacherRequestDto teacherRequestDto);
 }
