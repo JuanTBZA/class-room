@@ -13,12 +13,7 @@ public interface UserMapper {
     @Mapping(source = "role.name", target = "role")
     public UserResponseDto toResponseDto(User user);
 
-    @Mapping(target = "role", ignore = true)
     public User toEntity(UserRequestDto requestDto);
 
-    @Mapping(target = "id", ignore = true )
-    @Mapping(target = "role", ignore = true)
-    @Mapping(target = "password", ignore = true)
-    public void entityToUpdate(UserRequestDto requestDto, @MappingTarget User user);
 
 }

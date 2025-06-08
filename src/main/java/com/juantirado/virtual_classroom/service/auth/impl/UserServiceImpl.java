@@ -2,6 +2,7 @@ package com.juantirado.virtual_classroom.service.auth.impl;
 
 import com.juantirado.virtual_classroom.dto.auth.UserRequestDto;
 import com.juantirado.virtual_classroom.dto.auth.UserResponseDto;
+import com.juantirado.virtual_classroom.entity.auth.Role;
 import com.juantirado.virtual_classroom.entity.auth.User;
 import com.juantirado.virtual_classroom.mapper.auth.UserMapper;
 import com.juantirado.virtual_classroom.repository.auth.RoleRepository;
@@ -33,45 +34,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto create(UserRequestDto userRequestDto) {
-        User user = userMapper.toEntity(userRequestDto);
-        user.setPassword(passwordEncoder.encode(userRequestDto.password()));
-        user.setRole(roleRepository.findByName(userRequestDto.role()).orElse(null));
-        return userMapper.toResponseDto(userRepository.save(user));
-    }
-
-    @Override
-    public UserResponseDto update(long id, UserRequestDto userRequestDto) {
-
-        User user = userRepository.findById(id)
-                .orElseThrow(() ->  new IllegalArgumentException("Usuario no encontrado con id: " + id));
-
-        userRepository.findByEmail(userRequestDto.email())
-                .filter(existing -> !existing.getId().equals(id))
-                .ifPresent(existing -> {
-                    throw new IllegalArgumentException("El correo ya está en uso por otro usuario.");
-                });
-
-        userRepository.findByDni(userRequestDto.dni())
-                .filter(existing -> !existing.getId().equals(id))
-                .ifPresent(existing -> {
-                    throw new IllegalArgumentException("El DNI ya está en uso por otro usuario.");
-                });
-
-        userMapper.entityToUpdate(userRequestDto, user);
-
-        Optional.ofNullable(userRequestDto.password())
-                .filter(p -> !p.isBlank())
-                .ifPresent(p -> user.setPassword(passwordEncoder.encode(p)));
-
-        user.setRole(
-                roleRepository.findByName(userRequestDto.role())
-                        .orElseThrow(() ->  new IllegalArgumentException("Rol no encontrado: " + userRequestDto.role()))
-        );
-        return userMapper.toResponseDto(userRepository.save(user));
-    }
-
-    @Override
     public UserResponseDto delete(long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con id: " + id));
@@ -81,7 +43,17 @@ public class UserServiceImpl implements UserService {
         return userMapper.toResponseDto(userRepository.save(user));
     }
 
+    @Override
+    public User createTeacherUser(UserRequestDto dto) {
+        Role teacherRole = roleRepository.findByName("ROLE_TEACHER")
+                .orElseThrow(() -> new RuntimeException("Rol TEACHER no encontrado"));
 
+        User user = userMapper.toEntity(dto);
+        user.setRole(teacherRole);
+        user.setPassword(passwordEncoder.encode(dto.dni()));
+
+        return userRepository.save(user);
+    }
 
 
 

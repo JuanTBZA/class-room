@@ -13,7 +13,7 @@ public interface TeacherMapper {
     @Mapping(source = "user", target = "userResponseDto")
     TeacherResponseDto toResponseDto(Teacher teacher);
 
-    @Mapping(source = "userRequestDto", target = "user")
+    @Mapping(target = "user", ignore = true)
     Teacher  toEntity(TeacherRequestDto teacherRequestDto);
 
 

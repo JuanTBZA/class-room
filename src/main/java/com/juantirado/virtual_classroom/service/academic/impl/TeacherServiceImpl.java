@@ -3,11 +3,14 @@ package com.juantirado.virtual_classroom.service.academic.impl;
 import com.juantirado.virtual_classroom.dto.academic.TeacherRequestDto;
 import com.juantirado.virtual_classroom.dto.academic.TeacherResponseDto;
 import com.juantirado.virtual_classroom.dto.auth.UserRequestDto;
+import com.juantirado.virtual_classroom.dto.auth.UserResponseDto;
+import com.juantirado.virtual_classroom.entity.academic.Teacher;
 import com.juantirado.virtual_classroom.entity.auth.Role;
 import com.juantirado.virtual_classroom.entity.auth.User;
 import com.juantirado.virtual_classroom.mapper.academic.TeacherMapper;
 import com.juantirado.virtual_classroom.repository.academic.TeacherRepository;
 import com.juantirado.virtual_classroom.repository.auth.RoleRepository;
+import com.juantirado.virtual_classroom.repository.auth.UserRepository;
 import com.juantirado.virtual_classroom.service.academic.TeacherService;
 import com.juantirado.virtual_classroom.service.auth.UserService;
 import jakarta.transaction.Transactional;
@@ -25,6 +28,7 @@ public class TeacherServiceImpl implements TeacherService {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private final UserRepository userRepository;
 
     @Override
     public List<TeacherResponseDto> getAll() {
@@ -36,25 +40,14 @@ public class TeacherServiceImpl implements TeacherService {
         return teacherRepository.findById(id).map(teacherMapper::toResponseDto).orElse(null);
     }
 
+
     @Override
     @Transactional
     public TeacherResponseDto createTeacher(TeacherRequestDto teacherRequestDto){
-
-        UserRequestDto originalUserDto = teacherRequestDto.userRequestDto();
-
-        String encodedPassword = (originalUserDto.password() == null || originalUserDto.password().isBlank())
-                ? passwordEncoder.encode(originalUserDto.dni())
-                : passwordEncoder.encode(originalUserDto.password());
-
-        Role role = roleRepository.findByName(originalUserDto.role())
-                .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
-
-
-/// /////////// aca falta seguir
-
-
-        return teacherMapper.toResponseDto(teacherRepository.save(teacherMapper.toEntity(teacherRequestDto)));
-
+        User user = userService.createTeacherUser(teacherRequestDto.userRequestDto());
+        Teacher teacher = teacherMapper.toEntity(teacherRequestDto);
+        teacher.setUser(userRepository.findById(user.getId()).orElseThrow());
+        return teacherMapper.toResponseDto(teacherRepository.save(teacher));
     }
 
 
