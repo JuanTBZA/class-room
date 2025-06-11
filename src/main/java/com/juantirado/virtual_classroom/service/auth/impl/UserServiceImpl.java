@@ -13,7 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -54,6 +53,19 @@ public class UserServiceImpl implements UserService {
 
         return userRepository.save(user);
     }
+
+    @Override
+    public User createStudentUser(UserRequestDto dto) {
+        Role studentRole = roleRepository.findByName("ROLE_STUDENT")
+                .orElseThrow(() -> new RuntimeException("Rol STUDENT no encontrado"));
+
+        User user = userMapper.toEntity(dto);
+        user.setRole(studentRole);
+        user.setPassword(passwordEncoder.encode(dto.dni()));
+
+        return userRepository.save(user);
+    }
+
 
 
 

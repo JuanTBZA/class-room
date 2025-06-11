@@ -14,4 +14,6 @@ public interface UserService {
     UserResponseDto delete(long id);
 
     User createTeacherUser(UserRequestDto dto);
+
+    User createStudentUser(UserRequestDto dto);
 }
