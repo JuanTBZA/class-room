@@ -143,7 +143,7 @@ CREATE TABLE enrollment_detail (
     coupon_id INT REFERENCES coupon(id) ON DELETE CASCADE,
     base_price NUMERIC(10, 2) NOT NULL,
     applied_discount NUMERIC(10, 2) DEFAULT 0.00,
-    total NUMERIC(10, 2) GENERATED ALWAYS AS (base_price - applied_discount) STORED,
+    total NUMERIC(10, 2) NOT NULL,
     applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

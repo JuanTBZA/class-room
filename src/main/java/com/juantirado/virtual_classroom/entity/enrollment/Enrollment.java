@@ -13,13 +13,14 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "coupon")
+@Table(name = "enrollment")
 public class Enrollment {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,6 +51,10 @@ public class Enrollment {
 
         @Column(name = "total_amount")
         private BigDecimal totalAmount;
+
+        @OneToMany(mappedBy = "enrollment", cascade = CascadeType.ALL)
+        private List<EnrollmentDetail> enrollmentDetails;
+
 
 
 
