@@ -1,4 +1,8 @@
 package com.juantirado.virtual_classroom.dto.academic.ScheduledCourse;
 
-public class CourseBasicResponseDto {
+public record CourseBasicResponseDto (
+        String name,
+        Long id
+){
+
 }
