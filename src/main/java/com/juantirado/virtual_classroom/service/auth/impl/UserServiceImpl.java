@@ -1,5 +1,6 @@
 package com.juantirado.virtual_classroom.service.auth.impl;
 
+import com.juantirado.virtual_classroom.dto.PaginatedResponseDto;
 import com.juantirado.virtual_classroom.dto.auth.UserRequestDto;
 import com.juantirado.virtual_classroom.dto.auth.UserResponseDto;
 import com.juantirado.virtual_classroom.entity.auth.Role;
@@ -9,6 +10,10 @@ import com.juantirado.virtual_classroom.repository.auth.RoleRepository;
 import com.juantirado.virtual_classroom.repository.auth.UserRepository;
 import com.juantirado.virtual_classroom.service.auth.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +31,26 @@ public class UserServiceImpl implements UserService {
     public List<UserResponseDto> getAllUsers() {
         return userRepository.findAll().stream().map(userMapper::toResponseDto).toList();
     }
+
+    @Override
+    public PaginatedResponseDto<UserResponseDto> getUsersByPage(
+            String filtro, int page, int size, String orderBy, String orderDir
+    ) {
+        Sort sort = orderDir.equalsIgnoreCase("desc")
+                ? Sort.by(orderBy).descending()
+                : Sort.by(orderBy).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<User> pageResult = userRepository.findUsersByFiltro(filtro, pageable);
+
+        List<UserResponseDto> content = pageResult.getContent().stream()
+                .map(userMapper::toResponseDto)
+                .toList();
+
+        return new PaginatedResponseDto<>(content, pageResult.getTotalElements(), page, size);
+    }
+
 
     @Override
     public UserResponseDto getById(long id) {

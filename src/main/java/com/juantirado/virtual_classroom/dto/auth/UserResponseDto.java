@@ -5,6 +5,7 @@ public record UserResponseDto (
         String name,
         String email,
         String role,
+        String dni,
         boolean enabled
 ){
 }
