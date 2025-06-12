@@ -115,21 +115,24 @@ CREATE TABLE coupon (
     id SERIAL PRIMARY KEY,
     code VARCHAR(50) UNIQUE NOT NULL,
     description TEXT,
-    coupon_type VARCHAR(20) NOT NULL CHECK (coupon_type IN ('percentage', 'fixed')),
+    coupon_type VARCHAR(20) NOT NULL,
     amount NUMERIC(10,2) NOT NULL,
     max_uses INT DEFAULT 1,
     used_count INT DEFAULT 0,
     valid_from DATE,
     valid_until DATE,
-    active BOOLEAN DEFAULT TRUE
+    is_active BOOLEAN DEFAULT TRUE
 );
 
 CREATE TABLE enrollment (
     id SERIAL PRIMARY KEY,
     student_id INT REFERENCES student(id) ON DELETE CASCADE,
-    status VARCHAR(50) DEFAULT 'pending',
+    enrollment_status VARCHAR(50),
+    payment_status VARCHAR(50),
     file_voucher_url TEXT,
     total_amount NUMERIC(10, 2) NOT NULL,
+    created_by INT REFERENCES student(id) ON DELETE CASCADE,
+    payment_method varchar(50),
     enrollment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

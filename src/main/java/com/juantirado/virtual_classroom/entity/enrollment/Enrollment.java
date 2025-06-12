@@ -2,6 +2,8 @@ package com.juantirado.virtual_classroom.entity.enrollment;
 
 import com.juantirado.virtual_classroom.entity.academic.Student;
 import com.juantirado.virtual_classroom.entity.enums.EnrollmentStatus;
+import com.juantirado.virtual_classroom.entity.enums.PaymentMethod;
+import com.juantirado.virtual_classroom.entity.enums.PaymentStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -29,7 +31,16 @@ public class Enrollment {
         private Student student;
 
         @Enumerated(EnumType.STRING)
-        private EnrollmentStatus status;
+        @Column(name = "enrollment_status")
+        private EnrollmentStatus enrollmentStatus;
+
+        @Enumerated(EnumType.STRING)
+        @Column(name = "payment_status")
+        private PaymentStatus paymentStatus;
+
+        @Enumerated(EnumType.STRING)
+        @Column(name = "payment_method")
+        private PaymentMethod paymentMethod;
 
         @Column(name = "file_voucher_url")
         private String fileVoucherUrl;

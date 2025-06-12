@@ -48,14 +48,13 @@ public class Coupon {
     @Column(name = "valid_until")
     private LocalDateTime validUntil;
 
-    @Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
+    @Column(name = "is_active",columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean active;
 
     @PrePersist
     void setPersist(){
         active = true;
         usedCount = 0;
-        maxUses = 1;
         validFrom = LocalDateTime.now();
     }
 }
