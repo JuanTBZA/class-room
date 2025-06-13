@@ -2,10 +2,7 @@ package com.juantirado.virtual_classroom.service.academic.impl;
 
 import com.juantirado.virtual_classroom.dto.academic.TeacherRequestDto;
 import com.juantirado.virtual_classroom.dto.academic.TeacherResponseDto;
-import com.juantirado.virtual_classroom.dto.auth.UserRequestDto;
-import com.juantirado.virtual_classroom.dto.auth.UserResponseDto;
 import com.juantirado.virtual_classroom.entity.academic.Teacher;
-import com.juantirado.virtual_classroom.entity.auth.Role;
 import com.juantirado.virtual_classroom.entity.auth.User;
 import com.juantirado.virtual_classroom.mapper.academic.TeacherMapper;
 import com.juantirado.virtual_classroom.repository.academic.TeacherRepository;
@@ -48,6 +45,11 @@ public class TeacherServiceImpl implements TeacherService {
         Teacher teacher = teacherMapper.toEntity(teacherRequestDto);
         teacher.setUser(userRepository.findById(user.getId()).orElseThrow());
         return teacherMapper.toResponseDto(teacherRepository.save(teacher));
+    }
+
+    @Override
+    public long getTotalTeacherCount() {
+        return teacherRepository.count();
     }
 
 

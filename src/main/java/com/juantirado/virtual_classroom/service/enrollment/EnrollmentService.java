@@ -11,4 +11,6 @@ public interface EnrollmentService {
     EnrollmentResponseDto create(EnrollmentRequestDto dto);
 
     List<EnrollmentResponseDto> getAll();
+
+    long getTodayEnrollmentCount();
 }

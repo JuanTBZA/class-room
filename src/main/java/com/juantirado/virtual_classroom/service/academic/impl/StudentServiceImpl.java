@@ -42,4 +42,9 @@ public class StudentServiceImpl implements StudentService {
         student.setUser(userRepository.findById(user.getId()).orElseThrow());
         return studentMapper.toResponseDto(studentRepository.save(student));
     }
+
+    @Override
+    public long getActiveStudentCount() {
+        return studentRepository.countActiveStudents();
+    }
 }

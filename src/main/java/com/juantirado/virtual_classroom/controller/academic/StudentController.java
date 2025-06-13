@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,5 +39,12 @@ public class StudentController {
     public ResponseEntity<StudentResponseDto> createStudent(@RequestBody StudentRequestDto studentRequestDto) {
         StudentResponseDto createdStudent = studentService.createStudent(studentRequestDto);
         return ResponseEntity.ok(createdStudent);
+    }
+
+
+    @GetMapping("/active-count")
+    public ResponseEntity<Map<String, Long>> getActiveStudentCount() {
+        long count = studentService.getActiveStudentCount();
+        return ResponseEntity.ok(Map.of("activeStudentCount", count));
     }
 }

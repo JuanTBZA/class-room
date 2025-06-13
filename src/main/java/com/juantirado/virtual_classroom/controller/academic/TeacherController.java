@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -44,5 +45,11 @@ public class TeacherController {
     public ResponseEntity<TeacherResponseDto> createTeacher(@RequestBody TeacherRequestDto teacherRequestDto) {
         TeacherResponseDto createdTeacher = teacherService.createTeacher(teacherRequestDto);
         return ResponseEntity.ok(createdTeacher);
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Map<String, Long>> getTotalTeacherCount() {
+        long count = teacherService.getTotalTeacherCount();
+        return ResponseEntity.ok(Map.of("teacherCount", count));
     }
 }

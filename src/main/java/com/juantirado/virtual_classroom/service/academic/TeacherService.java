@@ -11,4 +11,6 @@ public interface TeacherService {
     TeacherResponseDto getById(Long id);
 
     TeacherResponseDto createTeacher(TeacherRequestDto teacherRequestDto);
+
+    long getTotalTeacherCount();
 }

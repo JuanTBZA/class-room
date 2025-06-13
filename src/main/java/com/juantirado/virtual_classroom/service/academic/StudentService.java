@@ -13,4 +13,6 @@ public interface StudentService {
 
     @Transactional
     StudentResponseDto createStudent(StudentRequestDto studentRequestDto);
+
+    long getActiveStudentCount();
 }

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/enrollments")
@@ -25,5 +26,11 @@ public class EnrollmentController {
     public ResponseEntity<List<EnrollmentResponseDto>> getAll() {
         List<EnrollmentResponseDto> result = enrollmentService.getAll();
         return result.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(result);
+    }
+
+        @GetMapping("/today-count")
+    public ResponseEntity<Map<String, Long>> getTodayEnrollmentCount() {
+        long count = enrollmentService.getTodayEnrollmentCount();
+        return ResponseEntity.ok(Map.of("enrollmentsToday", count));
     }
 }

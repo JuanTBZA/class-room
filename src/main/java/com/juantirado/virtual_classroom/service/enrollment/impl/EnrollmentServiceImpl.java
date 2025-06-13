@@ -31,83 +31,88 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     private final CouponRepository couponRepository;
     private final EnrollmentMapper enrollmentMapper;
 
-    @Transactional
+
     @Override
+    @Transactional
     public EnrollmentResponseDto create(EnrollmentRequestDto dto) {
-        Student student = studentRepository.findById(dto.studentId)
+        var enrollment = new Enrollment();
+
+        var student = studentRepository.findById(dto.studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
-        Enrollment enrollment = Enrollment.builder()
-                .student(student)
-                .fileVoucherUrl(dto.fileVoucherUrl)
-                .paymentMethod(dto.paymentMethod)
-                .enrollmentStatus(dto.enrollmentStatus)
-                .paymentStatus(dto.paymentStatus)
-                .enrollmentDate(LocalDateTime.now())
-                .build();
+        enrollment.setStudent(student);
+        enrollment.setEnrollmentStatus(dto.enrollmentStatus);
+        enrollment.setPaymentStatus(dto.paymentStatus);
+        enrollment.setPaymentMethod(dto.paymentMethod);
+        enrollment.setFileVoucherUrl(dto.fileVoucherUrl);
+        enrollment.setEnrollmentDate(LocalDateTime.now());
 
-        List<EnrollmentDetail> details = new ArrayList<>();
-        BigDecimal totalGeneral = BigDecimal.ZERO;
+        var details = dto.details
+                .stream()
+                .map(detailDto -> {
+                    var shift = shiftRepository.findById(detailDto.shiftId)
+                            .orElseThrow(() -> new RuntimeException("Shift not found"));
 
-        for (EnrollmentDetailRequestDto d : dto.details) {
-                Shift shift = shiftRepository.findById(d.shiftId)
-                    .orElseThrow(() -> new RuntimeException("Shift not found"));
+                    var basePrice = shift.getPrice();
+                    var discount = BigDecimal.ZERO;
+                    Coupon coupon = null;
 
-            BigDecimal base = shift.getPrice();
-            BigDecimal discount = BigDecimal.ZERO;
-            Coupon coupon = null;
+                    if (detailDto.couponId != null) {
+                        coupon = couponRepository.findById(detailDto.couponId)
+                                .filter(c -> c.getActive() && c.getValidUntil().isAfter(LocalDateTime.now()))
+                                .orElseThrow(() -> new RuntimeException("Invalid or expired coupon"));
 
-            if (d.couponId != null) {
-                coupon = couponRepository.findById(d.couponId)
-                        .filter(c -> c.getActive() && c.getValidUntil().isAfter(LocalDateTime.now()))
-                        .orElseThrow(() -> new RuntimeException("Invalid or expired coupon"));
+                        if (coupon.getUsedCount() >= coupon.getMaxUses()) {
+                            throw new RuntimeException("Coupon usage limit reached");
+                        }
 
-                if (coupon.getUsedCount() >= coupon.getMaxUses()) {
-                    throw new RuntimeException("Coupon usage limit reached");
-                }
+                        discount = coupon.getType().name().equals("PERCENTAGE")
+                                ? basePrice.multiply(coupon.getAmount()).divide(BigDecimal.valueOf(100))
+                                : coupon.getAmount();
 
-                if (coupon.getType().name().equals("PERCENTAGE")) {
-                    discount = base.multiply(coupon.getAmount()).divide(BigDecimal.valueOf(100));
-                } else {
-                    discount = coupon.getAmount();
-                }
+                        coupon.setUsedCount(coupon.getUsedCount() + 1);
+                        couponRepository.save(coupon);
+                    }
 
-                coupon.setUsedCount(coupon.getUsedCount() + 1);
-                couponRepository.save(coupon);
-            }
+                    var total = basePrice.subtract(discount);
 
-            BigDecimal total = base.subtract(discount);
+                    return EnrollmentDetail.builder()
+                            .enrollment(enrollment)
+                            .shift(shift)
+                            .coupon(coupon)
+                            .basePrice(basePrice)
+                            .appliedDiscount(discount)
+                            .total(total)
+                            .appliedAt(LocalDateTime.now())
+                            .build();
+                })
+                .toList();
 
-            EnrollmentDetail detail = EnrollmentDetail.builder()
-                    .enrollment(enrollment)
-                    .shift(shift)
-                    .coupon(coupon)
-                    .basePrice(base)
-                    .appliedDiscount(discount)
-                    .total(total)
-                    .appliedAt(LocalDateTime.now())
-                    .build();
+        var totalAmount = details.stream()
+                .map(EnrollmentDetail::getTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-            details.add(detail);
-            totalGeneral = totalGeneral.add(total);
-        }
+        enrollment.setTotalAmount(totalAmount);
 
-        enrollment.setTotalAmount(totalGeneral);
-        enrollment = enrollmentRepository.save(enrollment);
-
-        for (EnrollmentDetail detail : details) {
-            detail.setEnrollment(enrollment);
-        }
-
+        var savedEnrollment = enrollmentRepository.save(enrollment);
         detailRepository.saveAll(details);
+        enrollment.setEnrollmentDetails(details);
 
-        return enrollmentMapper.toResponseDto(enrollment);
+
+        return enrollmentMapper.toResponseDto(savedEnrollment);
     }
+
+
 
     @Override
     public List<EnrollmentResponseDto> getAll() {
         return enrollmentRepository.findAll().stream()
                 .map(enrollmentMapper::toResponseDto)
                 .toList();
+    }
+
+    @Override
+    public long getTodayEnrollmentCount() {
+        return enrollmentRepository.countEnrollmentsToday();
     }
 }
