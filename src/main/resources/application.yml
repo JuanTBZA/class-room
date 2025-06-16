@@ -21,3 +21,8 @@ application:
       expiration: 15000
       refresh-token:
         expiration: 2592000000
+
+azure:
+  storage:
+    connection-string: DefaultEndpointsProtocol=https;AccountName=cresources01;AccountKey=CRJxn8fwi0s0uP+xGkv4FFA0jM8Vti5lRsNuNgEhx5BSrCKUtjwAnHiF9po015y5gyFLQ4pUbv4n+AStxMqINA==;EndpointSuffix=core.windows.net
+    container-name: archivos-app
