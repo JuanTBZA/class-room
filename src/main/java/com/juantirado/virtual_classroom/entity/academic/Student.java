@@ -20,7 +20,7 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     @OneToOne(fetch = FetchType.LAZY)
     @NotNull
     private User user;

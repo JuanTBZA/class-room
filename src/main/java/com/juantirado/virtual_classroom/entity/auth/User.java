@@ -38,7 +38,7 @@ public class User {
     @NotBlank
     private String email;
 
-    @Column(columnDefinition = "BIT(1) default 1")
+    @Column(nullable = false)
     private Boolean enabled;
 
     @Column(name = "created_at")

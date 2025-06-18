@@ -1,0 +1,6 @@
+INSERT INTO role (id, name) VALUES
+(1, 'ROLE_USER'),
+(2, 'ROLE_ADMIN'),
+(3, 'ROLE_TEACHER'),
+(4, 'ROLE_STUDENT')
+ON CONFLICT (id) DO NOTHING;
