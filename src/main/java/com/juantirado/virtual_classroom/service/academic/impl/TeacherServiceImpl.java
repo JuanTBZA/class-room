@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +34,15 @@ public class TeacherServiceImpl implements TeacherService {
         return teacherRepository.findById(id).map(teacherMapper::toResponseDto).orElse(null);
     }
 
+    @Override
+    public Optional<TeacherResponseDto> getByUserId(Long userId) {
+        return teacherRepository.findByUserId(userId)
+                .map(teacherMapper::toResponseDto);
+    }
+
+
+
+
 
     @Override
     @Transactional
@@ -42,6 +52,28 @@ public class TeacherServiceImpl implements TeacherService {
         teacher.setUser(userRepository.findById(user.getId()).orElseThrow(() -> new RuntimeException("El suario no existe.")));
         return teacherMapper.toResponseDto(teacherRepository.save(teacher));
     }
+
+    @Override
+    @Transactional
+    public TeacherResponseDto updateTeacher(Long id, TeacherRequestDto teacherRequestDto) {
+        Teacher existingTeacher = teacherRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("El docente con ID " + id + " no existe."));
+
+        User user = existingTeacher.getUser();
+        if (user != null && teacherRequestDto.userRequestDto() != null) {
+            user.setName(teacherRequestDto.userRequestDto().name());
+            user.setEmail(teacherRequestDto.userRequestDto().email());
+            user.setDni(teacherRequestDto.userRequestDto().dni());
+            user.setEnabled(teacherRequestDto.userRequestDto().enabled());
+            userRepository.save(user);
+        }
+
+        teacherMapper.updateEntityFromDto(teacherRequestDto, existingTeacher);
+
+        return teacherMapper.toResponseDto(teacherRepository.save(existingTeacher));
+    }
+
+
 
     @Override
     public long getTotalTeacherCount() {

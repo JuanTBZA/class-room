@@ -54,6 +54,30 @@ public class TeacherController {
         }
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<TeacherResponseDto> updateTeacher(
+            @PathVariable Long id,
+            @RequestBody TeacherRequestDto teacherRequestDto) {
+        try {
+            TeacherResponseDto updatedTeacher = teacherService.updateTeacher(id, teacherRequestDto);
+            return ResponseEntity.ok(updatedTeacher);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+
+    @GetMapping("/by-user/{userId}")
+    public ResponseEntity<TeacherResponseDto> getTeacherByUserId(@PathVariable Long userId) {
+        try {
+            return teacherService.getByUserId(userId)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     @GetMapping("/count")
     public ResponseEntity<Map<String, Long>> getTotalTeacherCount() {
         try {
