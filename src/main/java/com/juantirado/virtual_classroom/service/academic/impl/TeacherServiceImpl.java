@@ -83,7 +83,7 @@ public class TeacherServiceImpl implements TeacherService {
     @Transactional
     @Override
     public void deleteTeacher(Long id) {
-        Teacher teacher = teacherRepository.findById(id)
+        Teacher teacher = teacherRepository.findByUserId(id)
                 .orElseThrow(() -> new RuntimeException("El docente con ID " + id + " no existe."));
 
         User user = teacher.getUser();

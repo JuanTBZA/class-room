@@ -14,5 +14,13 @@ public interface StudentService {
     @Transactional
     StudentResponseDto createStudent(StudentRequestDto studentRequestDto);
 
+    @Transactional
+    StudentResponseDto updateStudent(Long id, StudentRequestDto studentRequestDto);
+
+    StudentResponseDto getByUserId(Long id);
+
+    @Transactional
+    void deleteStudent(Long id);
+
     long getActiveStudentCount();
 }

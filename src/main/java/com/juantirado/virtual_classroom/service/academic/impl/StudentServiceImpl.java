@@ -43,6 +43,47 @@ public class StudentServiceImpl implements StudentService {
         return studentMapper.toResponseDto(studentRepository.save(student));
     }
 
+    @Transactional
+    @Override
+    public StudentResponseDto updateStudent(Long id, StudentRequestDto studentRequestDto) {
+        Student existingStudent = studentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("El estudiante con ID " + id + " no existe."));
+
+        User user = existingStudent.getUser();
+        if (user != null && studentRequestDto.userRequestDto() != null) {
+            user.setName(studentRequestDto.userRequestDto().name());
+            user.setEmail(studentRequestDto.userRequestDto().email());
+            user.setDni(studentRequestDto.userRequestDto().dni());
+            user.setEnabled(studentRequestDto.userRequestDto().enabled());
+            userRepository.save(user);
+        }
+
+        studentMapper.updateEntityFromDto(studentRequestDto, existingStudent);
+
+        return studentMapper.toResponseDto(studentRepository.save(existingStudent));
+    }
+
+    @Override
+    public StudentResponseDto getByUserId(Long id) {
+        return studentRepository.findByUserId(id).map(studentMapper::toResponseDto).orElse(null);
+    }
+
+
+    @Transactional
+    @Override
+    public void deleteStudent(Long id) {
+        Student student = studentRepository.findByUserId(id)
+                .orElseThrow(() -> new RuntimeException("El estudiante con ID " + id + " no existe."));
+
+        User user = student.getUser();
+        studentRepository.delete(student);
+        if (user != null) {
+            userRepository.delete(user);
+        }
+    }
+
+
+
     @Override
     public long getActiveStudentCount() {
         return studentRepository.countActiveStudents();

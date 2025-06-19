@@ -6,6 +6,7 @@ import com.juantirado.virtual_classroom.entity.academic.Student;
 import com.juantirado.virtual_classroom.mapper.auth.UserMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring", uses = UserMapper.class)
 public interface StudentMapper {
@@ -15,4 +16,7 @@ public interface StudentMapper {
 
     @Mapping(target = "user", ignore = true)
     Student toEntity(StudentRequestDto studentRequestDto);
+
+    @Mapping(target = "user", ignore = true)
+    void updateEntityFromDto(StudentRequestDto dto, @MappingTarget Student entity);
 }
