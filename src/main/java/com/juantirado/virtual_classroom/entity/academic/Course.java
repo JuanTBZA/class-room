@@ -22,16 +22,8 @@ public class Course {
 
     @Column(unique = true)
     @NotEmpty
-
     private String name;
 
     private String description;
 
-    @Column(name = "is_deleted")
-    private boolean deleted;
-
-    @PrePersist
-    void setPersist(){
-        deleted = false;
-    }
 }
