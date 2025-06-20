@@ -1,10 +1,16 @@
+-- =========================
+-- ROLES
+-- =========================
 INSERT INTO role (id, name) VALUES
-(1, 'ROLE_USER'),
-(2, 'ROLE_ADMIN'),
-(3, 'ROLE_TEACHER'),
-(4, 'ROLE_STUDENT')
-ON CONFLICT (id) DO NOTHING;
--- Inserción de usuarios con ID explícito Y CON `enabled`
+                                (1, 'ROLE_USER'),
+                                (2, 'ROLE_ADMIN'),
+                                (3, 'ROLE_TEACHER'),
+                                (4, 'ROLE_STUDENT')
+    ON CONFLICT (id) DO NOTHING;
+
+-- =========================
+-- USERS
+-- =========================
 INSERT INTO users (id, name, dni, password, email, role_id, enabled)
 VALUES
 -- Profesores
@@ -32,7 +38,9 @@ VALUES
 (20, 'Paula Calderón', '10000020', '$2a$10$ghijkl10', 'paula.calderon@example.com', 4, true)
     ON CONFLICT (id) DO NOTHING;
 
--- Insertar en teacher con id fijo
+-- =========================
+-- TEACHERS
+-- =========================
 INSERT INTO teacher (id, user_id, contract_date_start, contract_date_end, specialization)
 VALUES
     (1, 1, '2024-03-01', '2025-03-01', 'Matemática'),
@@ -47,7 +55,9 @@ VALUES
     (10,10, '2024-03-01', '2025-03-01', 'Filosofía')
     ON CONFLICT (id) DO NOTHING;
 
--- Insertar en student con id fijo
+-- =========================
+-- STUDENTS
+-- =========================
 INSERT INTO student (id, user_id, university_headquarters, intended_major)
 VALUES
     (1, 11, 'Filial Chepén', 'Ingeniería de Sistemas'),
@@ -62,4 +72,26 @@ VALUES
     (10,20, 'Filial Trujillo', 'Enfermería')
     ON CONFLICT (id) DO NOTHING;
 
+-- =========================
+-- COURSES
+-- =========================
+INSERT INTO course (id, name, description) VALUES
+                                               (1, 'Aritmética', 'Desarrollo del pensamiento lógico-matemático aplicado al cálculo con números.'),
+                                               (2, 'Álgebra', 'Estudio de expresiones algebraicas, ecuaciones y sistemas.'),
+                                               (3, 'Geometría', 'Análisis de figuras, teoremas y razonamiento espacial.'),
+                                               (4, 'Trigonometría', 'Estudio de razones trigonométricas, identidades y funciones.'),
+                                               (5, 'Física', 'Aplicación de principios físicos en mecánica, termodinámica y electricidad.'),
+                                               (6, 'Química', 'Estudio de la materia, reacciones químicas y estructuras atómicas.'),
+                                               (7, 'Biología', 'Exploración de procesos celulares, genéticos y ecológicos.'),
+                                               (8, 'Lenguaje', 'Comprensión lectora, análisis de textos y gramática.'),
+                                               (9, 'Literatura', 'Estudio de géneros literarios, autores peruanos y universales.'),
+                                               (10, 'Historia del Perú', 'Análisis cronológico de los procesos históricos del Perú.')
+    ON CONFLICT (id) DO NOTHING;
 
+-- =========================
+-- SINCRONIZAR SECUENCIAS
+-- =========================
+SELECT setval('users_id_seq', (SELECT MAX(id) FROM users), true);
+SELECT setval('teacher_id_seq', (SELECT MAX(id) FROM teacher), true);
+SELECT setval('student_id_seq', (SELECT MAX(id) FROM student), true);
+SELECT setval('course_id_seq', (SELECT MAX(id) FROM course), true);

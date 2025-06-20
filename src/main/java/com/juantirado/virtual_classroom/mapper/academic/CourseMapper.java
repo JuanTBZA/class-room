@@ -13,7 +13,6 @@ public interface CourseMapper {
 
     public CourseResponseDto toResponseDto(Course entity);
 
-    @Mapping(target = "deleted", ignore = true )
     public Course toEntity(CourseRequestDto requestDto);
 
     @Mapping(target = "id", ignore = true )
