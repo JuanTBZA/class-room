@@ -1,0 +1,14 @@
+services:
+  class-room:
+    image: juantiradoboza/api-class-room:latest
+    container_name: ${CONTAINER_NAME}
+    ports:
+      - "${PORT}:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      app.config.server-db: ${SERVER_DB}
+      app.config.username: ${DB_USERNAME}
+      app.config.password: ${DB_PASSWORD}
+      jwt.secret.key: ${JWT_SECRET_KEY}
+      azure.connection: ${AZURE_CONNECTION}
+    restart: unless-stopped
