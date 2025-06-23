@@ -5,10 +5,13 @@ services:
     ports:
       - "${PORT}:8080"
     environment:
+      PORT: ${PORT}
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
-      app.config.server-db: ${SERVER_DB}
-      app.config.username: ${DB_USERNAME}
-      app.config.password: ${DB_PASSWORD}
-      jwt.secret.key: ${JWT_SECRET_KEY}
-      azure.connection: ${AZURE_CONNECTION}
+      SERVER_DB: ${SERVER_DB}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      AZURE_CONNECTION: ${AZURE_CONNECTION}
+      CONTAINER_NAME: ${CONTAINER_NAME}
+
     restart: unless-stopped

@@ -1,15 +1,17 @@
-## Pasos para compilar en docker:
 
-### 1.- Generar Dockerfile: Dockerfile
+## PASOS COMPLETOS
 
-### 2.- Clean and install del proyecto
-    mvn clean package -DskipTests
+# 1. Compilar el proyecto (genera el .jar)
+mvn clean package -DskipTests
 
-### 3.- Construir la imagen (estando en la misma carpeta donde esta el Dockerfile)
-    docker build -t juantiradoboza/api-class-room:latest .
+# 2. Construir la imagen Docker
+docker build -t juantiradoboza/api-class-room:latest .
 
+# 3. Eliminar contenedor previo (si existe)
+docker rm -f archivos-app || echo "Sin contenedor anterior"
 
-### 4.- Ejecutar el contenedor
+# 4. Ejecutar con Docker Compose usando archivo de entorno
+docker compose --env-file .dev.env up --build -d
 
-#### Con Docker compose file: docker-compose.yml
-    docker compose -f docker-compose.yml -p api-class-room --env-file .dev.env up --force-recreate --build -d
+# 5. Subir la imagen a Docker Hub
+docker push juantiradoboza/api-class-room:latest
