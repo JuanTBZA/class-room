@@ -24,8 +24,3 @@ application:
       expiration: 15000
       refresh-token:
         expiration: 2592000000
-
-azure:
-  storage:
-    connection-string: ${AZURE_CONNECTION}
-    container-name: ${CONTAINER_NAME}
