@@ -21,4 +21,6 @@ public interface UserService {
     User createTeacherUser(UserRequestDto dto);
 
     User createStudentUser(UserRequestDto dto);
+
+    UserResponseDto createAdminUser(UserRequestDto dto);
 }

@@ -91,6 +91,19 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
+    @Override
+    public UserResponseDto createAdminUser(UserRequestDto dto) {
+        Role studentRole = roleRepository.findByName("ROLE_ADMIN")
+                .orElseThrow(() -> new RuntimeException("Rol ADMIN no encontrado"));
+
+        User user = userMapper.toEntity(dto);
+        user.setRole(studentRole);
+        user.setPassword(passwordEncoder.encode(dto.dni()));
+        userRepository.save(user);
+
+         return userMapper.toResponseDto(user);
+    }
+
 
 
 

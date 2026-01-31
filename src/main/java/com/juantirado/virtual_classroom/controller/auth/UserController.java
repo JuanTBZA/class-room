@@ -1,8 +1,11 @@
 package com.juantirado.virtual_classroom.controller.auth;
 
 import com.juantirado.virtual_classroom.dto.PaginatedResponseDto;
+import com.juantirado.virtual_classroom.dto.academic.StudentRequestDto;
+import com.juantirado.virtual_classroom.dto.academic.StudentResponseDto;
 import com.juantirado.virtual_classroom.dto.auth.UserRequestDto;
 import com.juantirado.virtual_classroom.dto.auth.UserResponseDto;
+import com.juantirado.virtual_classroom.entity.auth.User;
 import com.juantirado.virtual_classroom.service.auth.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -53,6 +56,16 @@ public class UserController {
     public ResponseEntity<UserResponseDto> deleteUser(@PathVariable long id) {
         UserResponseDto deletedUser = userService.delete(id);
         return ResponseEntity.ok(deletedUser);
+    }
+
+    @PostMapping("/admin")
+    public ResponseEntity<UserResponseDto> createAdminUser(@RequestBody UserRequestDto adminRequestDto) {
+        try {
+            UserResponseDto created = userService.createAdminUser(adminRequestDto);
+            return ResponseEntity.ok(created);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
 }

@@ -8,6 +8,7 @@ INSERT INTO role (id, name) VALUES
                                 (4, 'ROLE_STUDENT')
     ON CONFLICT (id) DO NOTHING;
 
+
 -- =========================
 -- USERS
 -- =========================

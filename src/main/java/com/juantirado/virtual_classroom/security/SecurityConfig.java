@@ -51,7 +51,7 @@ public class SecurityConfig {
 
                                 .requestMatchers("/admin/leer-user").hasAuthority("USER_READ")
                                 .requestMatchers("/admin/escribir-user").hasAuthority("USER_WRITE")
-                                .requestMatchers("/church/territory/**").permitAll()
+
 
 
 
