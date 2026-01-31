@@ -29,14 +29,16 @@ public class UserController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "name") String orderBy,
-            @RequestParam(defaultValue = "asc") String orderDir
+            @RequestParam(defaultValue = "asc") String orderDir,
+            @RequestParam(required = false) Boolean enabled
     ) {
-        var response = userService.getUsersByPage(filtro, page, size, orderBy, orderDir);
+        var response = userService.getUsersByPage(filtro, page, size, orderBy, orderDir, enabled);
         if(response.content().isEmpty()) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(response);
     }
+
 
 
     @GetMapping("/{id}")

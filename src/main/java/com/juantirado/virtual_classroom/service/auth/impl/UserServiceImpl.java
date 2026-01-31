@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public PaginatedResponseDto<UserResponseDto> getUsersByPage(
-            String filtro, int page, int size, String orderBy, String orderDir
+            String filtro, int page, int size, String orderBy, String orderDir, Boolean enabled
     ) {
         Sort sort = orderDir.equalsIgnoreCase("desc")
                 ? Sort.by(orderBy).descending()
@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<User> pageResult = userRepository.findUsersByFiltro(filtro, pageable);
+        Page<User> pageResult = userRepository.findUsersByFiltroAndEnabled(filtro, enabled, pageable);
 
         List<UserResponseDto> content = pageResult.getContent().stream()
                 .map(userMapper::toResponseDto)
@@ -53,6 +53,7 @@ public class UserServiceImpl implements UserService {
 
         return new PaginatedResponseDto<>(content, pageResult.getTotalElements(), page, size);
     }
+
 
 
     @Override

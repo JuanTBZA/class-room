@@ -11,7 +11,7 @@ public interface UserService {
     List<UserResponseDto> getAllUsers();
 
     PaginatedResponseDto<UserResponseDto> getUsersByPage(
-            String filtro, int page, int size, String orderBy, String orderDir
+            String filtro, int page, int size, String orderBy, String orderDir, Boolean enabled
     );
 
     UserResponseDto getById(long id);
