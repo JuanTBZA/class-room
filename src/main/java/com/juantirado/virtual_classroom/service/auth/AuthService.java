@@ -7,6 +7,9 @@ import com.juantirado.virtual_classroom.dto.auth.TokenResponseDto;
 import com.juantirado.virtual_classroom.entity.auth.Role;
 import com.juantirado.virtual_classroom.entity.auth.Token;
 import com.juantirado.virtual_classroom.entity.auth.User;
+import com.juantirado.virtual_classroom.common.exception.ApiException;
+import com.juantirado.virtual_classroom.common.exception.BadRequestException;
+import com.juantirado.virtual_classroom.common.exception.ResourceNotFoundException;
 import com.juantirado.virtual_classroom.repository.auth.RoleRepository;
 import com.juantirado.virtual_classroom.repository.auth.TokenRepository;
 import com.juantirado.virtual_classroom.repository.auth.UserRepository;
@@ -16,6 +19,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,7 +37,7 @@ public class AuthService {
     public TokenResponseDto register(final RegisterRequestDto request) {
 
         Role userRole = roleRepository.findByName("ROLE_USER")
-                .orElseThrow(() -> new RuntimeException("Rol no configurado"));
+                .orElseThrow(() -> new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Rol no configurado"));
 
         final User user = User.builder()
                 .role(userRole)
@@ -63,7 +67,7 @@ public class AuthService {
                 )
         );
         final User user = repository.findByEmail(request.getEmail())
-                .orElseThrow();
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con email: " + request.getEmail()));
         final String accessToken = jwtService.generateToken(user);
         final String refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
@@ -96,7 +100,7 @@ public class AuthService {
     public TokenResponseDto refreshToken(@NotNull final String authentication) {
 
         if (authentication == null || !authentication.startsWith("Bearer ")) {
-            throw new IllegalArgumentException("Invalid auth header");
+            throw new BadRequestException("Invalid auth header");
         }
         final String refreshToken = authentication.substring(7);
         final String userEmail = jwtService.extractUsername(refreshToken);
@@ -104,7 +108,8 @@ public class AuthService {
             return null;
         }
 
-        final User user = this.repository.findByEmail(userEmail).orElseThrow();
+        final User user = this.repository.findByEmail(userEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con email: " + userEmail));
         final boolean isTokenValid = jwtService.isTokenValid(refreshToken, user);
         if (!isTokenValid) {
             return null;

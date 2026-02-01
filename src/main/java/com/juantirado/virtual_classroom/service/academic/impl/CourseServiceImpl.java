@@ -5,6 +5,7 @@ import com.juantirado.virtual_classroom.dto.academic.CourseRequestDto;
 import com.juantirado.virtual_classroom.dto.academic.CourseResponseDto;
 import com.juantirado.virtual_classroom.entity.academic.Course;
 import com.juantirado.virtual_classroom.mapper.academic.CourseMapper;
+import com.juantirado.virtual_classroom.common.exception.ResourceNotFoundException;
 import com.juantirado.virtual_classroom.repository.academic.CourseRepository;
 import com.juantirado.virtual_classroom.service.academic.CourseService;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class CourseServiceImpl implements CourseService {
     public CourseResponseDto getById(long id) {
         return courseRepository.findById(id)
                 .map(courseMapper::toResponseDto)
-                .orElse(null);
+                .orElseThrow(() -> new ResourceNotFoundException("El curso con ID " + id + " no existe."));
     }
 
     @Override
@@ -46,13 +47,10 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseResponseDto update(Long id, CourseRequestDto courseRequestDto) {
-        return courseRepository.findById(id)
-                .map(course -> {
-                    courseMapper.updateEntity(courseRequestDto, course);
-                    return courseRepository.save(course);
-                })
-                .map(courseMapper::toResponseDto)
-                .orElse(null);
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("El curso con ID " + id + " no existe."));
+        courseMapper.updateEntity(courseRequestDto, course);
+        return courseMapper.toResponseDto(courseRepository.save(course));
     }
 
     @Override
@@ -75,11 +73,9 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseResponseDto delete(Long id) {
-        return courseRepository.findById(id)
-                .map(course -> {
-                    courseRepository.deleteById(id);
-                    return courseMapper.toResponseDto(course);
-                })
-                .orElse(null);
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("El curso con ID " + id + " no existe."));
+        courseRepository.deleteById(id);
+        return courseMapper.toResponseDto(course);
     }
 }

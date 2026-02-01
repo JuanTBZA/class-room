@@ -6,6 +6,8 @@ import com.juantirado.virtual_classroom.dto.auth.UserResponseDto;
 import com.juantirado.virtual_classroom.entity.auth.Role;
 import com.juantirado.virtual_classroom.entity.auth.User;
 import com.juantirado.virtual_classroom.mapper.auth.UserMapper;
+import com.juantirado.virtual_classroom.common.exception.ApiException;
+import com.juantirado.virtual_classroom.common.exception.ResourceNotFoundException;
 import com.juantirado.virtual_classroom.repository.auth.RoleRepository;
 import com.juantirado.virtual_classroom.repository.auth.UserRepository;
 import com.juantirado.virtual_classroom.service.auth.UserService;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -54,13 +57,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto getById(long id) {
-        return userRepository.findById(id).map(userMapper::toResponseDto).orElse(null);
+        return userRepository.findById(id)
+                .map(userMapper::toResponseDto)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
     }
 
     @Override
     public UserResponseDto delete(long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
 
         user.setEnabled(false);
 
@@ -70,7 +75,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createTeacherUser(UserRequestDto dto) {
         Role teacherRole = roleRepository.findByName("ROLE_TEACHER")
-                .orElseThrow(() -> new RuntimeException("Rol TEACHER no encontrado"));
+                .orElseThrow(() -> new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Rol TEACHER no encontrado"));
 
         User user = userMapper.toEntity(dto);
         user.setRole(teacherRole);
@@ -82,7 +87,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createStudentUser(UserRequestDto dto) {
         Role studentRole = roleRepository.findByName("ROLE_STUDENT")
-                .orElseThrow(() -> new RuntimeException("Rol STUDENT no encontrado"));
+                .orElseThrow(() -> new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Rol STUDENT no encontrado"));
 
         User user = userMapper.toEntity(dto);
         user.setRole(studentRole);
@@ -94,7 +99,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto createAdminUser(UserRequestDto dto) {
         Role studentRole = roleRepository.findByName("ROLE_ADMIN")
-                .orElseThrow(() -> new RuntimeException("Rol ADMIN no encontrado"));
+                .orElseThrow(() -> new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Rol ADMIN no encontrado"));
 
         User user = userMapper.toEntity(dto);
         user.setRole(studentRole);

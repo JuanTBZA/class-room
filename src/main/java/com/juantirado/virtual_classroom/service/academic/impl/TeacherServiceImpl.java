@@ -5,6 +5,7 @@ import com.juantirado.virtual_classroom.dto.academic.TeacherResponseDto;
 import com.juantirado.virtual_classroom.entity.academic.Teacher;
 import com.juantirado.virtual_classroom.entity.auth.User;
 import com.juantirado.virtual_classroom.mapper.academic.TeacherMapper;
+import com.juantirado.virtual_classroom.common.exception.ResourceNotFoundException;
 import com.juantirado.virtual_classroom.repository.academic.TeacherRepository;
 import com.juantirado.virtual_classroom.repository.auth.UserRepository;
 import com.juantirado.virtual_classroom.service.academic.TeacherService;
@@ -31,7 +32,9 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public TeacherResponseDto getById(Long id) {
-        return teacherRepository.findById(id).map(teacherMapper::toResponseDto).orElse(null);
+        return teacherRepository.findById(id)
+                .map(teacherMapper::toResponseDto)
+                .orElseThrow(() -> new ResourceNotFoundException("El docente con ID " + id + " no existe."));
     }
 
     @Override
@@ -49,7 +52,8 @@ public class TeacherServiceImpl implements TeacherService {
     public TeacherResponseDto createTeacher(TeacherRequestDto teacherRequestDto){
         User user = userService.createTeacherUser(teacherRequestDto.userRequestDto());
         Teacher teacher = teacherMapper.toEntity(teacherRequestDto);
-        teacher.setUser(userRepository.findById(user.getId()).orElseThrow(() -> new RuntimeException("El suario no existe.")));
+        teacher.setUser(userRepository.findById(user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("El usuario asociado no existe.")));
         return teacherMapper.toResponseDto(teacherRepository.save(teacher));
     }
 
@@ -57,7 +61,7 @@ public class TeacherServiceImpl implements TeacherService {
     @Transactional
     public TeacherResponseDto updateTeacher(Long id, TeacherRequestDto teacherRequestDto) {
         Teacher existingTeacher = teacherRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("El docente con ID " + id + " no existe."));
+                .orElseThrow(() -> new ResourceNotFoundException("El docente con ID " + id + " no existe."));
 
         User user = existingTeacher.getUser();
         if (user != null && teacherRequestDto.userRequestDto() != null) {
@@ -84,7 +88,7 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public void deleteTeacher(Long id) {
         Teacher teacher = teacherRepository.findByUserId(id)
-                .orElseThrow(() -> new RuntimeException("El docente con ID " + id + " no existe."));
+                .orElseThrow(() -> new ResourceNotFoundException("El docente con ID " + id + " no existe."));
 
         User user = teacher.getUser();
         teacherRepository.delete(teacher);

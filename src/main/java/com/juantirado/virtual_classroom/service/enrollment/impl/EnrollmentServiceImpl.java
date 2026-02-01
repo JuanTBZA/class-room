@@ -1,5 +1,7 @@
 package com.juantirado.virtual_classroom.service.enrollment.impl;
 
+import com.juantirado.virtual_classroom.common.exception.BadRequestException;
+import com.juantirado.virtual_classroom.common.exception.ResourceNotFoundException;
 import com.juantirado.virtual_classroom.dto.enrollment.*;
 import com.juantirado.virtual_classroom.entity.academic.Shift;
 import com.juantirado.virtual_classroom.entity.academic.Student;
@@ -17,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -38,7 +39,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         var enrollment = new Enrollment();
 
         var student = studentRepository.findById(dto.studentId)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
 
         enrollment.setStudent(student);
         enrollment.setEnrollmentStatus(dto.enrollmentStatus);
@@ -51,7 +52,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 .stream()
                 .map(detailDto -> {
                     var shift = shiftRepository.findById(detailDto.shiftId)
-                            .orElseThrow(() -> new RuntimeException("Shift not found"));
+                            .orElseThrow(() -> new ResourceNotFoundException("Shift not found"));
 
                     var basePrice = shift.getPrice();
                     var discount = BigDecimal.ZERO;
@@ -60,10 +61,10 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                     if (detailDto.couponId != null) {
                         coupon = couponRepository.findById(detailDto.couponId)
                                 .filter(c -> c.getActive() && c.getValidUntil().isAfter(LocalDateTime.now()))
-                                .orElseThrow(() -> new RuntimeException("Invalid or expired coupon"));
+                                .orElseThrow(() -> new BadRequestException("Invalid or expired coupon"));
 
                         if (coupon.getUsedCount() >= coupon.getMaxUses()) {
-                            throw new RuntimeException("Coupon usage limit reached");
+                            throw new BadRequestException("Coupon usage limit reached");
                         }
 
                         discount = coupon.getType().name().equals("PERCENTAGE")
