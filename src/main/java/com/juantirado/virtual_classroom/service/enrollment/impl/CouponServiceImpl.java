@@ -5,6 +5,7 @@ import com.juantirado.virtual_classroom.dto.enrollment.CouponRequestDto;
 import com.juantirado.virtual_classroom.dto.enrollment.CouponResponseDto;
 import com.juantirado.virtual_classroom.entity.enrollment.Coupon;
 import com.juantirado.virtual_classroom.mapper.enrollment.CouponMapper;
+import com.juantirado.virtual_classroom.common.exception.ResourceNotFoundException;
 import com.juantirado.virtual_classroom.repository.enrollment.CouponRepository;
 import com.juantirado.virtual_classroom.service.enrollment.CouponService;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class CouponServiceImpl implements CouponService {
     public CouponResponseDto getByCode(String code) {
         return couponRepository.findByCode(code)
                 .map(couponMapper::toResponseDto)
-                .orElseThrow(() -> new RuntimeException("Coupon with code " + code + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Coupon with code " + code + " not found"));
     }
 
     @Override
@@ -47,7 +48,7 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public CouponResponseDto patch(Long id, CouponPatchRequestDto dto) {
         Coupon coupon = couponRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Coupon not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Coupon not found with id: " + id));
 
         if (dto.description() != null) {
             coupon.setDescription(dto.description());

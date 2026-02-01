@@ -20,81 +20,49 @@ public class TeacherController {
 
     @GetMapping
     public ResponseEntity<List<TeacherResponseDto>> getAllTeachers() {
-        try {
-            List<TeacherResponseDto> teachers = teacherService.getAll();
-            if (teachers.isEmpty()) {
-                return ResponseEntity.noContent().build();
-            }
-            return ResponseEntity.ok(teachers);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+        List<TeacherResponseDto> teachers = teacherService.getAll();
+        if (teachers.isEmpty()) {
+            return ResponseEntity.noContent().build();
         }
+        return ResponseEntity.ok(teachers);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<TeacherResponseDto> getTeacherById(@PathVariable Long id) {
-        try {
-            TeacherResponseDto teacherResponseDto = teacherService.getById(id);
-            if (teacherResponseDto == null) {
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.ok(teacherResponseDto);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+        return ResponseEntity.ok(teacherService.getById(id));
     }
 
     @PostMapping
     public ResponseEntity<TeacherResponseDto> createTeacher(@RequestBody TeacherRequestDto teacherRequestDto) {
-        try {
-            TeacherResponseDto createdTeacher = teacherService.createTeacher(teacherRequestDto);
-            return ResponseEntity.ok(createdTeacher);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+        TeacherResponseDto createdTeacher = teacherService.createTeacher(teacherRequestDto);
+        return ResponseEntity.ok(createdTeacher);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<TeacherResponseDto> updateTeacher(
             @PathVariable Long id,
             @RequestBody TeacherRequestDto teacherRequestDto) {
-        try {
-            TeacherResponseDto updatedTeacher = teacherService.updateTeacher(id, teacherRequestDto);
-            return ResponseEntity.ok(updatedTeacher);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+        TeacherResponseDto updatedTeacher = teacherService.updateTeacher(id, teacherRequestDto);
+        return ResponseEntity.ok(updatedTeacher);
     }
 
 
     @GetMapping("/by-user/{userId}")
     public ResponseEntity<TeacherResponseDto> getTeacherByUserId(@PathVariable Long userId) {
-        try {
-            return teacherService.getByUserId(userId)
-                    .map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.notFound().build());
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+        return teacherService.getByUserId(userId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/count")
     public ResponseEntity<Map<String, Long>> getTotalTeacherCount() {
-        try {
-            long count = teacherService.getTotalTeacherCount();
-            return ResponseEntity.ok(Map.of("teacherCount", count));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+        long count = teacherService.getTotalTeacherCount();
+        return ResponseEntity.ok(Map.of("teacherCount", count));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTeacher(@PathVariable Long id) {
-        try {
-            teacherService.deleteTeacher(id);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+        teacherService.deleteTeacher(id);
+        return ResponseEntity.ok().build();
     }
 }

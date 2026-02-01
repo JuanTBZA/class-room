@@ -1,11 +1,8 @@
 package com.juantirado.virtual_classroom.controller.auth;
 
 import com.juantirado.virtual_classroom.dto.PaginatedResponseDto;
-import com.juantirado.virtual_classroom.dto.academic.StudentRequestDto;
-import com.juantirado.virtual_classroom.dto.academic.StudentResponseDto;
 import com.juantirado.virtual_classroom.dto.auth.UserRequestDto;
 import com.juantirado.virtual_classroom.dto.auth.UserResponseDto;
-import com.juantirado.virtual_classroom.entity.auth.User;
 import com.juantirado.virtual_classroom.service.auth.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -44,11 +41,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable long id) {
-        UserResponseDto user = userService.getById(id);
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(userService.getById(id));
     }
 
 
@@ -60,12 +53,8 @@ public class UserController {
 
     @PostMapping("/admin")
     public ResponseEntity<UserResponseDto> createAdminUser(@RequestBody UserRequestDto adminRequestDto) {
-        try {
-            UserResponseDto created = userService.createAdminUser(adminRequestDto);
-            return ResponseEntity.ok(created);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+        UserResponseDto created = userService.createAdminUser(adminRequestDto);
+        return ResponseEntity.ok(created);
     }
 
 }

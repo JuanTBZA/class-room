@@ -5,6 +5,7 @@ import com.juantirado.virtual_classroom.dto.academic.StudentResponseDto;
 import com.juantirado.virtual_classroom.entity.academic.Student;
 import com.juantirado.virtual_classroom.entity.auth.User;
 import com.juantirado.virtual_classroom.mapper.academic.StudentMapper;
+import com.juantirado.virtual_classroom.common.exception.ResourceNotFoundException;
 import com.juantirado.virtual_classroom.repository.academic.StudentRepository;
 import com.juantirado.virtual_classroom.repository.auth.UserRepository;
 import com.juantirado.virtual_classroom.service.academic.StudentService;
@@ -31,7 +32,9 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentResponseDto getById(Long id) {
-        return studentRepository.findById(id).map(studentMapper::toResponseDto).orElse(null);
+        return studentRepository.findById(id)
+                .map(studentMapper::toResponseDto)
+                .orElseThrow(() -> new ResourceNotFoundException("El estudiante con ID " + id + " no existe."));
     }
 
     @Transactional
@@ -39,7 +42,8 @@ public class StudentServiceImpl implements StudentService {
     public StudentResponseDto createStudent(StudentRequestDto studentRequestDto) {
         User user = userService.createStudentUser(studentRequestDto.userRequestDto());
         Student student = studentMapper.toEntity(studentRequestDto);
-        student.setUser(userRepository.findById(user.getId()).orElseThrow());
+        student.setUser(userRepository.findById(user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("El usuario asociado no existe.")));
         return studentMapper.toResponseDto(studentRepository.save(student));
     }
 
@@ -47,7 +51,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentResponseDto updateStudent(Long id, StudentRequestDto studentRequestDto) {
         Student existingStudent = studentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("El estudiante con ID " + id + " no existe."));
+                .orElseThrow(() -> new ResourceNotFoundException("El estudiante con ID " + id + " no existe."));
 
         User user = existingStudent.getUser();
         if (user != null && studentRequestDto.userRequestDto() != null) {
@@ -65,7 +69,9 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentResponseDto getByUserId(Long id) {
-        return studentRepository.findByUserId(id).map(studentMapper::toResponseDto).orElse(null);
+        return studentRepository.findByUserId(id)
+                .map(studentMapper::toResponseDto)
+                .orElseThrow(() -> new ResourceNotFoundException("El estudiante con usuario ID " + id + " no existe."));
     }
 
 
@@ -73,7 +79,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public void deleteStudent(Long id) {
         Student student = studentRepository.findByUserId(id)
-                .orElseThrow(() -> new RuntimeException("El estudiante con ID " + id + " no existe."));
+                .orElseThrow(() -> new ResourceNotFoundException("El estudiante con ID " + id + " no existe."));
 
         User user = student.getUser();
         studentRepository.delete(student);

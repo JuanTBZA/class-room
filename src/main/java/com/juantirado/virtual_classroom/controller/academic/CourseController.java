@@ -11,14 +11,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/courses")
 @Tag(name = "Cursos", description = "API REST para gestionar cursos del sistema educativo")
@@ -44,14 +42,11 @@ public class CourseController {
     )
     @GetMapping
     public ResponseEntity<List<CourseResponseDto>> getAllCourses() {
-        try {
-            List<CourseResponseDto> courses = courseService.getAll();
-            if (courses.isEmpty()) return ResponseEntity.noContent().build();
-            return ResponseEntity.ok(courses);
-        } catch (Exception e) {
-            log.error("Error al listar cursos", e);
-            return ResponseEntity.internalServerError().build();
+        List<CourseResponseDto> courses = courseService.getAll();
+        if (courses.isEmpty()) {
+            return ResponseEntity.noContent().build();
         }
+        return ResponseEntity.ok(courses);
     }
 
     @Operation(
@@ -61,14 +56,7 @@ public class CourseController {
     )
     @GetMapping("/{id}")
     public ResponseEntity<CourseResponseDto> getCourseById(@PathVariable Long id) {
-        try {
-            CourseResponseDto course = courseService.getById(id);
-            if (course == null) return ResponseEntity.noContent().build();
-            return ResponseEntity.ok(course);
-        } catch (Exception e) {
-            log.error("Error al obtener curso por ID", e);
-            return ResponseEntity.internalServerError().build();
-        }
+        return ResponseEntity.ok(courseService.getById(id));
     }
 
     @Operation(
@@ -78,13 +66,8 @@ public class CourseController {
     )
     @PostMapping
     public ResponseEntity<CourseResponseDto> createCourse(@Valid @RequestBody CourseRequestDto dto) {
-        try {
-            CourseResponseDto created = courseService.create(dto);
-            return new ResponseEntity<>(created, HttpStatus.CREATED);
-        } catch (Exception e) {
-            log.error("Error al crear curso", e);
-            return ResponseEntity.internalServerError().build();
-        }
+        CourseResponseDto created = courseService.create(dto);
+        return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
     @Operation(
@@ -95,14 +78,8 @@ public class CourseController {
     @PutMapping("/{id}")
     public ResponseEntity<CourseResponseDto> updateCourse(@PathVariable Long id,
                                                           @Valid @RequestBody CourseRequestDto dto) {
-        try {
-            CourseResponseDto updated = courseService.update(id, dto);
-            if (updated == null) return ResponseEntity.noContent().build();
-            return ResponseEntity.ok(updated);
-        } catch (Exception e) {
-            log.error("Error al actualizar curso", e);
-            return ResponseEntity.internalServerError().build();
-        }
+        CourseResponseDto updated = courseService.update(id, dto);
+        return ResponseEntity.ok(updated);
     }
 
     @Operation(
@@ -112,13 +89,8 @@ public class CourseController {
     )
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
-        try {
-            courseService.delete(id);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            log.error("Error al eliminar curso", e);
-            return ResponseEntity.internalServerError().build();
-        }
+        courseService.delete(id);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(
@@ -134,13 +106,10 @@ public class CourseController {
             @RequestParam(defaultValue = "name") String orderBy,
             @RequestParam(defaultValue = "asc") String orderDir
     ) {
-        try {
-            var result = courseService.getCoursesByPage(filtro, page, size, orderBy, orderDir);
-            if (result.content().isEmpty()) return ResponseEntity.noContent().build();
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            log.error("Error al paginar cursos", e);
-            return ResponseEntity.internalServerError().build();
+        var result = courseService.getCoursesByPage(filtro, page, size, orderBy, orderDir);
+        if (result.content().isEmpty()) {
+            return ResponseEntity.noContent().build();
         }
+        return ResponseEntity.ok(result);
     }
 }
