@@ -54,8 +54,6 @@ public class UserServiceImpl implements UserService {
         return new PaginatedResponseDto<>(content, pageResult.getTotalElements(), page, size);
     }
 
-
-
     @Override
     public UserResponseDto getById(long id) {
         return userRepository.findById(id)
