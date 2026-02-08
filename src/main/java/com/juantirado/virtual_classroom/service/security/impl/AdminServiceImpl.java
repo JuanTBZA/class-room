@@ -25,8 +25,12 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public UserResponseDto updateAdmin(long id, UserRequestDto dto) {
+
+
+
         User existing = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
+
 
         Role adminRole = roleRepository.findByName("ROLE_ADMIN")
                 .orElseThrow(() -> new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Rol ADMIN no encontrado"));
@@ -35,6 +39,7 @@ public class AdminServiceImpl implements AdminService {
         User updated = userMapper.toEntity(dto);
         updated.setId(existing.getId());
         updated.setRole(adminRole);
+        updated.setEnabled(existing.getEnabled());
 
         // Mantener la contraseña existente si no se proporciona dni en el DTO
         if (dto.dni() != null && !dto.dni().isEmpty()) {
