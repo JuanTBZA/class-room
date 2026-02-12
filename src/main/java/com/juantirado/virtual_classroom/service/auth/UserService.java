@@ -14,13 +14,18 @@ public interface UserService {
             String filtro, int page, int size, String orderBy, String orderDir, Boolean enabled
     );
 
-    UserResponseDto getById(long id);
+    UserResponseDto getUserById(long id);
 
-    UserResponseDto delete(long id);
+    User createUserWithRole(UserRequestDto dto, String roleName);
 
-    User createTeacherUser(UserRequestDto dto);
+    User updateUser(Long userId, UserRequestDto dto);
 
-    User createStudentUser(UserRequestDto dto);
+    void deleteUser(Long userId);
 
-    UserResponseDto createAdminUser(UserRequestDto dto);
+
+
+
+
+
+
 }

@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TeacherService {
-    List<TeacherResponseDto> getAll();
+    List<TeacherResponseDto> getAllTeachers();
 
-    TeacherResponseDto getById(Long id);
+    TeacherResponseDto getTeacherById(Long id);
 
     Optional<TeacherResponseDto> getByUserId(Long userId);
 

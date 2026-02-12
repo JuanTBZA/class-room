@@ -39,24 +39,12 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-
-
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable long id) {
-        return ResponseEntity.ok(userService.getById(id));
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<UserResponseDto> deleteUser(@PathVariable long id) {
-        UserResponseDto deletedUser = userService.delete(id);
-        return ResponseEntity.ok(deletedUser);
-    }
 
-    @PostMapping("/admin")
-    public ResponseEntity<UserResponseDto> createAdminUser(@RequestBody UserRequestDto adminRequestDto) {
-        UserResponseDto created = userService.createAdminUser(adminRequestDto);
-        return ResponseEntity.ok(created);
-    }
 
 }

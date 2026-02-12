@@ -7,9 +7,9 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 
 public interface StudentService {
-    List<StudentResponseDto> getAll();
+    List<StudentResponseDto> getAllStudents();
 
-    StudentResponseDto getById(Long id);
+    StudentResponseDto getStudentById(Long id);
 
     @Transactional
     StudentResponseDto createStudent(StudentRequestDto studentRequestDto);

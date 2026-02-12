@@ -19,7 +19,7 @@ public class StudentController {
 
     @GetMapping
     public ResponseEntity<List<StudentResponseDto>> getAllStudents() {
-        List<StudentResponseDto> students = studentService.getAll();
+        List<StudentResponseDto> students = studentService.getAllStudents();
         if (students.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -28,7 +28,7 @@ public class StudentController {
 
     @GetMapping("/{id}")
     public ResponseEntity<StudentResponseDto> getStudentById(@PathVariable Long id) {
-        return ResponseEntity.ok(studentService.getById(id));
+        return ResponseEntity.ok(studentService.getStudentById(id));
     }
 
     @PostMapping

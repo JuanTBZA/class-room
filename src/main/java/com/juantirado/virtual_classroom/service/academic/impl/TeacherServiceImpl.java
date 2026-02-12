@@ -8,6 +8,7 @@ import com.juantirado.virtual_classroom.mapper.academic.TeacherMapper;
 import com.juantirado.virtual_classroom.common.exception.ResourceNotFoundException;
 import com.juantirado.virtual_classroom.repository.academic.TeacherRepository;
 import com.juantirado.virtual_classroom.repository.auth.UserRepository;
+import com.juantirado.virtual_classroom.security.constants.RoleConstants;
 import com.juantirado.virtual_classroom.service.academic.TeacherService;
 import com.juantirado.virtual_classroom.service.auth.UserService;
 import jakarta.transaction.Transactional;
@@ -26,12 +27,12 @@ public class TeacherServiceImpl implements TeacherService {
     private final UserRepository userRepository;
 
     @Override
-    public List<TeacherResponseDto> getAll() {
+    public List<TeacherResponseDto> getAllTeachers() {
         return teacherRepository.findAll().stream().map(teacherMapper::toResponseDto).toList();
     }
 
     @Override
-    public TeacherResponseDto getById(Long id) {
+    public TeacherResponseDto getTeacherById(Long id) {
         return teacherRepository.findById(id)
                 .map(teacherMapper::toResponseDto)
                 .orElseThrow(() -> new ResourceNotFoundException("El docente con ID " + id + " no existe."));
@@ -43,60 +44,58 @@ public class TeacherServiceImpl implements TeacherService {
                 .map(teacherMapper::toResponseDto);
     }
 
-
-
-
-
-    @Override
     @Transactional
-    public TeacherResponseDto createTeacher(TeacherRequestDto teacherRequestDto){
-        User user = userService.createTeacherUser(teacherRequestDto.userRequestDto());
-        Teacher teacher = teacherMapper.toEntity(teacherRequestDto);
-        teacher.setUser(userRepository.findById(user.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("El usuario asociado no existe.")));
+    @Override
+    public TeacherResponseDto createTeacher(TeacherRequestDto dto) {
+        User user = userService.createUserWithRole(
+                dto.userRequestDto(),
+                RoleConstants.TEACHER
+        );
+
+        Teacher teacher = teacherMapper.toEntity(dto);
+        teacher.setUser(user);
+
         return teacherMapper.toResponseDto(teacherRepository.save(teacher));
     }
 
-    @Override
     @Transactional
-    public TeacherResponseDto updateTeacher(Long id, TeacherRequestDto teacherRequestDto) {
-        Teacher existingTeacher = teacherRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("El docente con ID " + id + " no existe."));
+    @Override
+    public TeacherResponseDto updateTeacher(Long id, TeacherRequestDto dto) {
+        Teacher teacher = teacherRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("El docente con ID " + id + " no existe.")
+                );
 
-        User user = existingTeacher.getUser();
-        if (user != null && teacherRequestDto.userRequestDto() != null) {
-            user.setName(teacherRequestDto.userRequestDto().name());
-            user.setEmail(teacherRequestDto.userRequestDto().email());
-            user.setDni(teacherRequestDto.userRequestDto().dni());
-            user.setEnabled(teacherRequestDto.userRequestDto().enabled());
-            userRepository.save(user);
+        if (dto.userRequestDto() != null) {
+            userService.updateUser(
+                    teacher.getUser().getId(),
+                    dto.userRequestDto()
+            );
         }
 
-        teacherMapper.updateEntityFromDto(teacherRequestDto, existingTeacher);
+        teacherMapper.updateEntityFromDto(dto, teacher);
 
-        return teacherMapper.toResponseDto(teacherRepository.save(existingTeacher));
+        return teacherMapper.toResponseDto(
+                teacherRepository.save(teacher)
+        );
     }
 
+    @Transactional
+    @Override
+    public void deleteTeacher(Long userId) {
+        Teacher teacher = teacherRepository.findByUserId(userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("El docente con usuario ID " + userId + " no existe.")
+                );
 
+        teacherRepository.delete(teacher);
+        userService.deleteUser(userId);
+    }
 
     @Override
     public long getTotalTeacherCount() {
         return teacherRepository.count();
     }
-
-    @Transactional
-    @Override
-    public void deleteTeacher(Long id) {
-        Teacher teacher = teacherRepository.findByUserId(id)
-                .orElseThrow(() -> new ResourceNotFoundException("El docente con ID " + id + " no existe."));
-
-        User user = teacher.getUser();
-        teacherRepository.delete(teacher);
-        if (user != null) {
-            userRepository.delete(user);
-        }
-    }
-
 
 
 

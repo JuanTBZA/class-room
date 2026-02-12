@@ -4,7 +4,6 @@ import com.juantirado.virtual_classroom.dto.academic.TeacherRequestDto;
 import com.juantirado.virtual_classroom.dto.academic.TeacherResponseDto;
 import com.juantirado.virtual_classroom.service.academic.TeacherService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +19,7 @@ public class TeacherController {
 
     @GetMapping
     public ResponseEntity<List<TeacherResponseDto>> getAllTeachers() {
-        List<TeacherResponseDto> teachers = teacherService.getAll();
+        List<TeacherResponseDto> teachers = teacherService.getAllTeachers();
         if (teachers.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -29,7 +28,7 @@ public class TeacherController {
 
     @GetMapping("/{id}")
     public ResponseEntity<TeacherResponseDto> getTeacherById(@PathVariable Long id) {
-        return ResponseEntity.ok(teacherService.getById(id));
+        return ResponseEntity.ok(teacherService.getTeacherById(id));
     }
 
     @PostMapping

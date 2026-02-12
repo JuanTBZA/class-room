@@ -68,6 +68,15 @@ CREATE TABLE student (
                          intended_major VARCHAR(100)
 );
 
+-- Tabla admins
+CREATE TABLE admin (
+    id SERIAL PRIMARY KEY,
+    user_id INT UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+    created_by_admin_id INT REFERENCES admin(id) ON DELETE SET NULL,
+    is_master BOOLEAN DEFAULT FALSE,
+    department VARCHAR(100)
+);
+
 -- =========================
 -- ACADEMIC ORGANIZATION
 -- =========================
@@ -91,7 +100,7 @@ CREATE TABLE shift (    --turno dia/tarde/noche son 5 dias por turno / seria com
 CREATE TABLE course (
                         id SERIAL PRIMARY KEY,
                         name VARCHAR(100),
-                        description TEXT,
+                        description TEXT
 );
 
 CREATE TABLE scheduled_course (   --basicamente el horario del curso que se dicta en cierto dia y que profesor lo dicta
@@ -196,4 +205,3 @@ CREATE TABLE assignment_submission (
 -- Validate time of course
 ALTER TABLE scheduled_course
     ADD CONSTRAINT chk_time_range CHECK (start_time < end_time);
-

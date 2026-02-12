@@ -40,6 +40,15 @@ VALUES
     ON CONFLICT (id) DO NOTHING;
 
 -- =========================
+-- ADMINS (USERS)
+-- =========================
+INSERT INTO users (id, name, dni, password, email, role_id, enabled)
+VALUES
+    (21, 'Admin Root', '10000021', '$2a$10$adminkey1', 'admin.root@example.com', 2, true),
+    (22, 'Regional Admin', '10000022', '$2a$10$adminkey2', 'admin.regional@example.com', 2, true)
+    ON CONFLICT (id) DO NOTHING;
+
+-- =========================
 -- TEACHERS
 -- =========================
 INSERT INTO teacher (id, user_id, contract_date_start, contract_date_end, specialization)
@@ -96,3 +105,4 @@ SELECT setval('users_id_seq', (SELECT MAX(id) FROM users), true);
 SELECT setval('teacher_id_seq', (SELECT MAX(id) FROM teacher), true);
 SELECT setval('student_id_seq', (SELECT MAX(id) FROM student), true);
 SELECT setval('course_id_seq', (SELECT MAX(id) FROM course), true);
+SELECT setval('admin_id_seq', (SELECT MAX(id) FROM admin), true);

@@ -1,55 +1,103 @@
 package com.juantirado.virtual_classroom.service.security.impl;
 
-import com.juantirado.virtual_classroom.dto.auth.UserRequestDto;
-import com.juantirado.virtual_classroom.dto.auth.UserResponseDto;
-import com.juantirado.virtual_classroom.entity.auth.Role;
+import com.juantirado.virtual_classroom.dto.security.AdminRequestDto;
+import com.juantirado.virtual_classroom.dto.security.AdminResponseDto;
 import com.juantirado.virtual_classroom.entity.auth.User;
-import com.juantirado.virtual_classroom.mapper.auth.UserMapper;
-import com.juantirado.virtual_classroom.common.exception.ApiException;
+import com.juantirado.virtual_classroom.entity.security.Admin;
+import com.juantirado.virtual_classroom.mapper.security.AdminMapper;
 import com.juantirado.virtual_classroom.common.exception.ResourceNotFoundException;
-import com.juantirado.virtual_classroom.repository.auth.RoleRepository;
-import com.juantirado.virtual_classroom.repository.auth.UserRepository;
+import com.juantirado.virtual_classroom.repository.security.AdminRepository;
+import com.juantirado.virtual_classroom.security.constants.RoleConstants;
+import com.juantirado.virtual_classroom.service.auth.UserService;
 import com.juantirado.virtual_classroom.service.security.AdminService;
-import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AdminServiceImpl implements AdminService {
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
+    private final AdminRepository adminRepository;
+    private final AdminMapper adminMapper;
+    private final UserService userService;
 
     @Override
-    public UserResponseDto updateAdmin(long id, UserRequestDto dto) {
+    public List<AdminResponseDto> getAllAdmins() {
+        return adminRepository.findAll().stream().map(adminMapper::toResponseDto).toList();
+    }
 
+    @Override
+    public AdminResponseDto getAdminById(Long id) {
+        return adminRepository.findById(id)
+                .map(adminMapper::toResponseDto)
+                .orElseThrow(() -> new ResourceNotFoundException("El admin con ID " + id + " no existe."));
+    }
 
+    @Override
+    public Optional<AdminResponseDto> getByUserId(Long userId) {
+        return adminRepository.findByUserId(userId).map(adminMapper::toResponseDto);
+    }
 
-        User existing = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
+    @Transactional
+    @Override
+    public AdminResponseDto createAdmin(AdminRequestDto dto) {
+        User user = userService.createUserWithRole(
+                dto.userRequestDto(),
+                RoleConstants.ADMIN
+        );
 
+        Admin admin = adminMapper.toEntity(dto);
+        admin.setUser(user);
 
-        Role adminRole = roleRepository.findByName("ROLE_ADMIN")
-                .orElseThrow(() -> new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Rol ADMIN no encontrado"));
-
-        // Map DTO to entity, preserve id and adjust fields as needed
-        User updated = userMapper.toEntity(dto);
-        updated.setId(existing.getId());
-        updated.setRole(adminRole);
-        updated.setEnabled(existing.getEnabled());
-
-        // Mantener la contraseña existente si no se proporciona dni en el DTO
-        if (dto.dni() != null && !dto.dni().isEmpty()) {
-            updated.setPassword(passwordEncoder.encode(dto.dni()));
-        } else {
-            updated.setPassword(existing.getPassword());
+        if (dto.createdByAdminId() != null) {
+            admin.setCreatedByAdmin(adminRepository.findById(dto.createdByAdminId()).orElse(null));
         }
 
-        // Si hay campos que deben conservarse del existente (por ejemplo createdAt), el mapper/impl debe ajustarlo.
-        User saved = userRepository.save(updated);
-        return userMapper.toResponseDto(saved);
+        if (dto.isMaster() != null) {
+            admin.setIsMaster(dto.isMaster());
+        }
+
+        return adminMapper.toResponseDto(adminRepository.save(admin));
+    }
+
+    @Transactional
+    @Override
+    public AdminResponseDto updateAdmin(Long id, AdminRequestDto dto) {
+        Admin admin = adminRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Admin no existe"));
+
+        if (dto.userRequestDto() != null) {
+            userService.updateUser(admin.getUser().getId(), dto.userRequestDto());
+        }
+
+        adminMapper.updateEntityFromDto(dto, admin);
+
+        if (dto.createdByAdminId() != null) {
+            admin.setCreatedByAdmin(adminRepository.findById(dto.createdByAdminId()).orElse(null));
+        }
+
+        if (dto.isMaster() != null) {
+            admin.setIsMaster(dto.isMaster());
+        }
+
+        return adminMapper.toResponseDto(adminRepository.save(admin));
+    }
+
+    @Transactional
+    @Override
+    public void deleteAdmin(Long userId) {
+        Admin admin = adminRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Admin no existe"));
+
+        adminRepository.delete(admin);
+        userService.deleteUser(userId);
+    }
+
+    @Override
+    public long getTotalAdminCount() {
+        return adminRepository.count();
     }
 }

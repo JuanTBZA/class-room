@@ -55,58 +55,52 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto getById(long id) {
+    public UserResponseDto getUserById(long id) {
         return userRepository.findById(id)
                 .map(userMapper::toResponseDto)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
     }
 
-    @Override
-    public UserResponseDto delete(long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
 
-        user.setEnabled(false);
 
-        return userMapper.toResponseDto(userRepository.save(user));
-    }
 
     @Override
-    public User createTeacherUser(UserRequestDto dto) {
-        Role teacherRole = roleRepository.findByName("ROLE_TEACHER")
-                .orElseThrow(() -> new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Rol TEACHER no encontrado"));
+    public User createUserWithRole(UserRequestDto dto, String roleName) {
+        Role role = roleRepository.findByName(roleName)
+                .orElseThrow(() -> new ApiException(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Rol no encontrado: " + roleName
+                ));
 
         User user = userMapper.toEntity(dto);
-        user.setRole(teacherRole);
+        user.setRole(role);
         user.setPassword(passwordEncoder.encode(dto.dni()));
+        user.setEnabled(true);
 
         return userRepository.save(user);
     }
 
     @Override
-    public User createStudentUser(UserRequestDto dto) {
-        Role studentRole = roleRepository.findByName("ROLE_STUDENT")
-                .orElseThrow(() -> new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Rol STUDENT no encontrado"));
+    public User updateUser(Long userId, UserRequestDto dto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
-        User user = userMapper.toEntity(dto);
-        user.setRole(studentRole);
-        user.setPassword(passwordEncoder.encode(dto.dni()));
+        user.setName(dto.name());
+        user.setEmail(dto.email());
+        user.setDni(dto.dni());
+        user.setEnabled(dto.enabled());
 
         return userRepository.save(user);
     }
 
     @Override
-    public UserResponseDto createAdminUser(UserRequestDto dto) {
-        Role studentRole = roleRepository.findByName("ROLE_ADMIN")
-                .orElseThrow(() -> new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Rol ADMIN no encontrado"));
+    public void deleteUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
-        User user = userMapper.toEntity(dto);
-        user.setRole(studentRole);
-        user.setPassword(passwordEncoder.encode(dto.dni()));
-        userRepository.save(user);
-
-         return userMapper.toResponseDto(user);
+        userRepository.delete(user);
     }
+
 
 
 
