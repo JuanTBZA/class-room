@@ -11,7 +11,86 @@ INSERT INTO role (id, name) VALUES
 
 -- =========================
 -- USERS
+-- =========================-- =========================
+-- AUTHORITIES
 -- =========================
+INSERT INTO authority (id, name) VALUES
+                                     -- USER
+                                     (1, 'USER_READ'),
+                                     (2, 'USER_WRITE'),
+                                     (3, 'USER_UPDATE'),
+
+                                     -- ADMIN
+                                     (4, 'ADMIN_READ'),
+                                     (5, 'ADMIN_WRITE'),
+                                     (6, 'ADMIN_UPDATE'),
+
+                                     -- TEACHER
+                                     (7, 'TEACHER_READ'),
+                                     (8, 'TEACHER_WRITE'),
+                                     (9, 'TEACHER_UPDATE'),
+
+                                     -- STUDENT
+                                     (10, 'STUDENT_READ'),
+                                     (11, 'STUDENT_WRITE'),
+                                     (12, 'STUDENT_UPDATE'),
+
+                                     -- COURSE
+                                     (13, 'COURSE_READ'),
+                                     (14, 'COURSE_WRITE'),
+                                     (15, 'COURSE_UPDATE'),
+
+                                     -- SCHEDULECOURSE
+                                     (16, 'SCHEDULECOURSE_READ'),
+                                     (17, 'SCHEDULECOURSE_WRITE'),
+                                     (18, 'SCHEDULECOURSE_UPDATE'),
+
+                                     -- SEMESTER
+                                     (19, 'SEMESTER_READ'),
+                                     (20, 'SEMESTER_WRITE'),
+                                     (21, 'SEMESTER_UPDATE'),
+
+                                     -- SHIFT
+                                     (22, 'SHIFT_READ'),
+                                     (23, 'SHIFT_WRITE'),
+                                     (24, 'SHIFT_UPDATE'),
+
+                                     -- TOKEN
+                                     (25, 'TOKEN_READ'),
+                                     (26, 'TOKEN_WRITE'),
+                                     (27, 'TOKEN_UPDATE'),
+
+                                     -- COUPON
+                                     (28, 'COUPON_READ'),
+                                     (29, 'COUPON_WRITE'),
+                                     (30, 'COUPON_UPDATE'),
+
+                                     -- ENROLLMENT
+                                     (31, 'ENROLLMENT_READ'),
+                                     (32, 'ENROLLMENT_WRITE'),
+                                     (33, 'ENROLLMENT_UPDATE'),
+
+                                     -- ENROLLMENTDETAIL
+                                     (34, 'ENROLLMENTDETAIL_READ'),
+                                     (35, 'ENROLLMENTDETAIL_WRITE'),
+                                     (36, 'ENROLLMENTDETAIL_UPDATE')
+    ON CONFLICT (id) DO NOTHING;
+
+
+-- Asignar TODOS los authorities al ROLE_ADMIN (role_id = 2)
+
+INSERT INTO role_authorities (role_id, authority_id)
+SELECT 2, id
+FROM authority
+    ON CONFLICT (role_id, authority_id) DO NOTHING;
+
+
+
+-- sincronizar secuencia de authority si es necesario
+SELECT setval('authority_id_seq', (SELECT COALESCE(MAX(id),0) FROM authority), true);
+
+
+
 INSERT INTO users (id, name, dni, password, email, role_id, enabled)
 VALUES
 -- Profesores
