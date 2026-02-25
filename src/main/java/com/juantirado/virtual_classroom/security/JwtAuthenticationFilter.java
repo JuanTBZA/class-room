@@ -1,6 +1,7 @@
 package com.juantirado.virtual_classroom.security;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.juantirado.virtual_classroom.entity.auth.User;
 import com.juantirado.virtual_classroom.repository.auth.TokenRepository;
 import com.juantirado.virtual_classroom.repository.auth.UserRepository;
@@ -18,13 +19,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Component
@@ -32,7 +34,6 @@ import java.util.Optional;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final UserDetailsService userDetailsService;
     private final TokenRepository tokenRepository;
     private final UserRepository userRepository;
 
@@ -65,16 +66,42 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             userEmail = jwtService.extractUsername(jwt);
         } catch (ExpiredJwtException e) {
+            // Responder con JSON estructurado cuando el token ha expirado
             response.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
             response.setHeader("Access-Control-Allow-Credentials", "true");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("El token ha expirado");
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+
+            Map<String, Object> body = new HashMap<>();
+            body.put("timestamp", java.time.Instant.now().toString());
+            body.put("status", HttpServletResponse.SC_UNAUTHORIZED);
+            body.put("error", "Unauthorized");
+            body.put("detail", "El token ha expirado");
+            body.put("path", request.getServletPath());
+
+            String json = new ObjectMapper().writeValueAsString(body);
+
+            response.getWriter().write(json);
             return;
         } catch (Exception e) {
+            // Responder con JSON estructurado cuando el token es inválido
             response.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
             response.setHeader("Access-Control-Allow-Credentials", "true");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Token inválido");
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+
+            Map<String, Object> body = new HashMap<>();
+            body.put("timestamp", java.time.Instant.now().toString());
+            body.put("status", HttpServletResponse.SC_UNAUTHORIZED);
+            body.put("error", "Unauthorized");
+            body.put("detail", "Token inválido");
+            body.put("path", request.getServletPath());
+
+            String json = new ObjectMapper().writeValueAsString(body);
+
+            response.getWriter().write(json);
             return;
         }
 
@@ -92,9 +119,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Optional<User> userOptional = userRepository.findByEmail(userEmail);
 
             if (userOptional.isPresent() && jwtService.isTokenValid(jwt, userOptional.get())) {
-                // Extraer authorities del token
+                // Extraer authorities del token de forma segura
                 Claims claims = jwtService.extractAllClaims(jwt);
-                List<String> authorities = claims.get("authorities", List.class);
+                Object authObj = claims.get("authorities");
+                List<String> authorities;
+                if (authObj instanceof List<?> list) {
+                    authorities = list.stream().map(Object::toString).toList();
+                } else {
+                    authorities = List.of();
+                }
 
                 // Construir UserDetails con los authorities del token
                 UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
